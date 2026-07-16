@@ -65,6 +65,21 @@ Una vez rellenado, este valor es el número de versión oficial del proyecto y d
 
 **Diferencias técnicas detectadas con impacto en la SPEC:** **ninguna confirmada.** Los puntos marcados "prioritario"/"Verificar" son tareas de comprobación previas a la implementación, no cambios ya conocidos. Si al verificar contra 6.5 alguna propiedad hubiera cambiado de nombre o comportamiento (candidatos más probables: el enum *Composite Operation* del `TilemapCollider2D` y los nombres de propiedades del *Pixel Perfect Camera* de URP), se registrará una enmienda **TEC-002** antes de tocar código; el resto de la SPEC no se vería afectado.
 
+### 4.1 Resultado de la verificación (preflight M1 — 2026-07-15)
+
+Verificación realizada por reflexión contra el Editor instalado (**6000.5.3f1**, URP **17.6.0**). Todas las APIs prioritarias y de la tabla anterior quedan **CONFIRMADAS**; no se requiere TEC-002.
+
+| API | Resultado en 6000.5.3f1 |
+|---|---|
+| Composite Operation (prioritario) | `Collider2D.compositeOperation` : enum `Collider2D.CompositeOperation` (incluye `Merge`). El bool `usedByComposite` quedó **obsoleto**. ✅ |
+| Geometry Type | `CompositeCollider2D.geometryType` : enum `CompositeCollider2D.GeometryType` (incluye `Polygons`). ✅ |
+| Rigidbody2D estático | `Rigidbody2D.bodyType = RigidbodyType2D.Static`. ✅ |
+| Rigidbody2D movimiento | `linearVelocity`, `position`, `interpolation` (`RigidbodyInterpolation2D`), `collisionDetectionMode` (`CollisionDetectionMode2D`), `constraints` (`RigidbodyConstraints2D`), `gravityScale`, `linearDamping`, `sleepMode` (`RigidbodySleepMode2D`). `velocity`/`drag` **obsoletos**. ✅ |
+| Pixel Perfect Camera (prioritario) | `UnityEngine.Rendering.Universal.PixelPerfectCamera` (URP 2D). Props vigentes: `assetsPPU`, `refResolutionX/Y`, `cropFrame` (enum), `gridSnapping` (enum). **Obsoletos**: `pixelSnapping`, `upscaleRT`, `stretchFill`, `cropFrameX`, `cropFrameY` → usar `gridSnapping`/`cropFrame`. ✅ |
+| Input System | `com.unity.inputsystem` 1.19.0; `InputActionReference`, `Enable/Disable`, `performed`/`canceled` disponibles. ✅ |
+| Build Profiles | `UnityEditor.Build.Profile.BuildProfile` disponible (usado en M0). ✅ |
+| Unity Test Framework | 1.7.0; `NUnit.Framework.Assert` disponible. ✅ |
+
 ## 5. Efecto sobre el estado de la SPEC
 
 La SPEC M0-M1 sigue **congelada en v0.4** salvo por esta enmienda **TEC-001**, que fija Unity 6.5 (6000.5) como versión base. No hay cambios de alcance ni de diseño. La implementación puede comenzar una vez: (a) registrada la versión exacta instalada (§2), y (b) completada la verificación de APIs de §4 contra el Editor 6.5.
