@@ -65,7 +65,7 @@ Orden de autoridad:
 1. `Docs/Canon/SYNORA_Biblia_del_Proyecto_v3.0.docx`
 2. `Docs/Design/SYNORA_GDD_Prototipo_Mecanico_v0.1.docx`
 3. `Docs/Technical/SYNORA_SPEC_M0-M1_Movimiento_v0.4.md`
-4. `Docs/Technical/ENMIENDA_TEC-001_Unity_6.5.3.md`
+4. `Docs/Technical/SYNORA_SPEC_M0-M1_Movimiento_v0.4_ENMIENDA_TEC-001.md`
 5. Este archivo `CLAUDE.md`
 
 ### Regla de conflicto

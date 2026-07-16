@@ -27,9 +27,10 @@
 Campo a **registrar en el momento de la instalación** (no puedo fijarlo desde aquí; debe copiarse literal desde Unity Hub → Installs):
 
 ```
-Unity 6.5 — versión exacta instalada: 6000.5.___f___   (rellenar con el parche estable instalado)
-Fecha de instalación: ____-__-__
+Editor exacto: 6000.5.3f1
+Rama: 6000.5
 Origen: Unity Hub (canal estable)
+Fecha: 2026-07-15
 ```
 
 Una vez rellenado, este valor es el número de versión oficial del proyecto y debe reflejarse en el registro maestro de decisiones (GDD §33).
