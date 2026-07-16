@@ -1,7 +1,9 @@
 {
     "name": "Synora.Runtime",
     "rootNamespace": "Synora",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
