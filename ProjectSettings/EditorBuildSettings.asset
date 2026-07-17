@@ -8,5 +8,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Bootstrap.unity
     guid: 57374e0168dd1a34993000114c3c85c7
+  - enabled: 1
+    path: Assets/Scenes/CamaraPreservacion.unity
+    guid: 3380bead41db41043ad8eeb15610585b
+  - enabled: 1
+    path: Assets/Scenes/CorredorTecnico.unity
+    guid: 387c9a6db28b2cd42917daa4eba12dcf
+  - enabled: 1
+    path: Assets/Scenes/ClaroExterior.unity
+    guid: 0edbcc2cf5f13fa4bbbdbe65b0d7c784
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
