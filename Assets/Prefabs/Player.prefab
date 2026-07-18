@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 388901768796767258}
   - component: {fileID: 3058012929028030953}
   - component: {fileID: 4164095416852513359}
+  - component: {fileID: 5254442603187374984}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -221,6 +222,7 @@ MonoBehaviour:
   inputReader: {fileID: 388901768796767258}
   movement: {fileID: 11400000, guid: 69e18d1dc3c6d2d4abf88cd145e2bda5, type: 2}
   body: {fileID: 8870824345775199857}
+  gate: {fileID: 5254442603187374984}
 --- !u!114 &4164095416852513359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235,3 +237,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerOrientation
   inputReader: {fileID: 388901768796767258}
   facing: {x: 0, y: -1}
+  gate: {fileID: 5254442603187374984}
+--- !u!114 &5254442603187374984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 156755272e4136e46944aa60e11ae1a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Systems.PlayerControlGate

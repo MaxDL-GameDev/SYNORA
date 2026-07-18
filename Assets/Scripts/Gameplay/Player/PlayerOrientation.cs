@@ -1,4 +1,5 @@
 using UnityEngine;
+using Synora.Systems;
 
 namespace Synora.Gameplay.Player
 {
@@ -14,11 +15,29 @@ namespace Synora.Gameplay.Player
         [SerializeField]
         private Vector2Int facing = Vector2Int.down;
 
+        [SerializeField]
+        private PlayerControlGate gate;
+
         /// <summary>Current cardinal facing; starts facing down.</summary>
         public Vector2Int Facing => facing;
 
+        private void Awake()
+        {
+            if (gate == null)
+            {
+                Debug.LogError(
+                    "PlayerOrientation: PlayerControlGate reference is not assigned.",
+                    this);
+            }
+        }
+
         private void Update()
         {
+            if (gate != null && gate.IsBlocked)
+            {
+                return;
+            }
+
             facing = Resolve(inputReader.MoveInput, facing);
         }
 

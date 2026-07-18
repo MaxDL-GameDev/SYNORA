@@ -1,5 +1,6 @@
 using UnityEngine;
 using Synora.Data;
+using Synora.Systems;
 
 namespace Synora.Gameplay.Player
 {
@@ -19,8 +20,27 @@ namespace Synora.Gameplay.Player
         [SerializeField]
         private Rigidbody2D body;
 
+        [SerializeField]
+        private PlayerControlGate gate;
+
+        private void Awake()
+        {
+            if (gate == null)
+            {
+                Debug.LogError(
+                    "PlayerMotor: PlayerControlGate reference is not assigned.",
+                    this);
+            }
+        }
+
         private void FixedUpdate()
         {
+            if (gate != null && gate.IsBlocked)
+            {
+                body.linearVelocity = Vector2.zero;
+                return;
+            }
+
             body.linearVelocity = CalculateVelocity(inputReader.MoveInput, movement.MoveSpeed);
         }
 
