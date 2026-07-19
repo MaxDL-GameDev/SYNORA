@@ -26,6 +26,11 @@ namespace Synora.Gameplay.Interaction
 
         public IReadOnlyList<IInteractable> Candidates => candidateBuffer;
 
+        public Vector2 OriginPosition =>
+            originPoint != null
+                ? (Vector2)originPoint.position
+                : Vector2.zero;
+
         private void Awake()
         {
             if (playerOrientation == null)
