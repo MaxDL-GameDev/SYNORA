@@ -182,10 +182,141 @@ Ninguna limitación implica una prueba omitida: todas las validaciones dependien
 - Pruebas automatizadas 14/14 · 0 failed · 0 skipped.
 - QA manual con E física, bloqueo/restauración, seguridad, teardown, recorrido y GC Alloc: todos PASS.
 - Consola estable 0 errores / 0 warnings; Bootstrap y las tres escenas no dirty.
-- **Build final: aún no realizado.**
-- **Tag `m2-complete`: aún no creado.**
-- El cierre definitivo de M2 (build, recorrido fuera del Editor, tag) pertenece a **Fase 8** y aún no se ha ejecutado.
+- El build final Windows y la validación fuera del Editor se documentan en **§14 (Fase 8A)**.
+
+## 14. Fase 8A — Build final Windows y validación fuera del Editor
+
+Base del build: commit `f896bbb` (docs: add M2 QA report), `main`, working tree limpio. No se modificaron código, escenas, prefabs, assets, ProjectSettings ni Packages para el build.
+
+### 14.A Build final Windows
+
+| Elemento | Valor |
+|---|---|
+| Fecha/hora del artefacto (`SYNORA.exe`) | 2026-07-19 15:14:46 (-06:00) |
+| Editor | Unity 6000.5.3f1 |
+| Plataforma | Standalone Windows 64-bit / **x86_64** |
+| Scripting Backend | **Mono** (Mono2x) |
+| Development Build | Off |
+| Script Debugging | Off |
+| Deep Profiling | Off |
+| Autoconnect Profiler | Off |
+| Escenas y orden | 0 Bootstrap · 1 CamaraPreservacion · 2 CorredorTecnico · 3 ClaroExterior |
+| Resultado | **Build Succeeded** · 0 errores · 0 warnings inesperados |
+| Duración | 30.3 s |
+| Tamaño total (filesystem, `Builds/Windows`) | **106 694 334 bytes = 101.75 MiB** |
+| Tamaño total (Unity Build Report) | 101.51 MB (dato informado por el build report; el valor de disco es el de la fila anterior) |
+| Nº de archivos (filesystem) | **201** (200 + 1 en `*_BurstDebugInformation_DoNotShip`, símbolos Burst no distribuibles) |
+| `SYNORA.exe` | **667 648 bytes** |
+| SHA-256 `SYNORA.exe` | `5ae0c84993c6bff7d0f03166cafd148cdec61f67ec85b5d97600e04b2abb26e4` |
+| Backend Mono confirmado por | presencia de `MonoBleedingEdge/` (+ `SYNORA_Data/`, `UnityCrashHandler64.exe`, `UnityPlayer.dll`) |
+
+Durante el build apareció el mensaje informativo conocido de URP (`"1 URP assets included in build"`), idéntico al de M1. **No quedó como warning estable:** la consola posterior al build quedó en **0 errores / 0 warnings**.
+
+### 14.B Validación standalone 1280×720
+
+Ejecución **fuera del Editor**, ventana 1280×720, recorrido completo confirmado por el Director:
+
+`CamaraPreservacion → CorredorTecnico → ClaroExterior → CorredorTecnico → CamaraPreservacion`
+
+| Comprobación | Resultado |
+|---|---|
+| Interacción con los tres examinables (terminal, panel, nodo) | ✅ |
+| Prompt `[E] Examinar` visible y sin recorte | ✅ |
+| Panel y textos legibles | ✅ |
+| `[E] Cerrar` visible | ✅ |
+| Ausencia de clipping | ✅ |
+| Bloqueo y restauración de control | ✅ |
+| Movimiento, orientación, cámara y colisiones | ✅ |
+| Transiciones y spawns | ✅ |
+| Ausencia de persistencia entre escenas | ✅ |
+| Ausencia de duplicados | ✅ |
+| Pixel art sin filtrado ni deformación inesperada | ✅ |
+| **Resultado** | **PASS** |
+
+### 14.C Player.log 1280×720
+
+| Elemento | Valor |
+|---|---|
+| Ruta | `Builds/Logs/M2_1280x720_Player.log` |
+| Nº de líneas | 56 |
+| Cargas/descargas observadas | 6 ciclos de `Unloading` (= cargas del recorrido) |
+| Excepciones / errores | ninguno |
+| Referencias missing / NullReference | ninguna |
+| Asserts / crash / failed / warning inesperado | ninguno |
+| Cierre | normal, exit code 0 |
+| **Resultado** | **PASS** |
+
+### 14.D Validación standalone 1920×1080
+
+Mismo recorrido, ventana 1920×1080, confirmado por el Director:
+
+| Comprobación | Resultado |
+|---|---|
+| Prompt centrado | ✅ |
+| Panel centrado | ✅ |
+| Título y cuerpo legibles | ✅ |
+| Hint `[E] Cerrar` visible | ✅ |
+| Sin clipping | ✅ |
+| Sin elementos fuera de pantalla | ✅ |
+| Sin solapamientos incorrectos | ✅ |
+| Apertura / cierre | ✅ |
+| Bloqueo / restauración | ✅ |
+| Transiciones y spawns | ✅ |
+| Ausencia de persistencia y duplicados | ✅ |
+| **Resultado** | **PASS** |
+
+### 14.E Player.log 1920×1080
+
+| Elemento | Valor |
+|---|---|
+| Ruta | `Builds/Logs/M2_1920x1080_Player.log` |
+| Nº de líneas | 56 |
+| Cargas/descargas observadas | 6 ciclos de `Unloading` |
+| Excepciones / errores / missing / NullReference | ninguno |
+| Asserts / crash / failed / warning inesperado | ninguno |
+| Cierre | normal, exit code 0 |
+| **Resultado** | **PASS** |
+
+### 14.F Regresión de M1 en la build
+
+Verificada en ambos recorridos fuera del Editor (confirmado por el Director):
+
+| Área | Resultado |
+|---|---|
+| Movimiento | ✅ |
+| Orientación | ✅ |
+| Colisiones | ✅ |
+| Cámara | ✅ |
+| `CameraBounds2D` | ✅ |
+| Transiciones bidireccionales | ✅ |
+| `SceneTransitionContext` | ✅ |
+| SpawnPoints correctos | ✅ |
+| Limpieza de velocidad al aparecer | ✅ |
+| **Resultado (1280×720 y 1920×1080)** | **PASS** |
+
+### 14.G Artefactos y crashes
+
+- Artefacto ubicado bajo `Builds/Windows/` (201 archivos, `SYNORA.exe` + `SYNORA_Data/` + `MonoBleedingEdge/` + `UnityCrashHandler64.exe` + `UnityPlayer.dll`).
+- `Builds/` está **ignorado por Git**; el artefacto **no forma parte del repositorio**.
+- Logs bajo `Builds/Logs/` (`M2_1280x720_Player.log`, `M2_1920x1080_Player.log`), también ignorados.
+- **Sin crash dumps** asociados a SYNORA en ninguna de las dos ejecuciones.
+
+### 14.H Resultado final de M2
+
+| Ítem | Resultado |
+|---|---|
+| Pruebas automatizadas | **14/14 PASS** (0 failed, 0 skipped) |
+| QA dentro del Editor | **PASS** |
+| QA standalone 1280×720 | **PASS** |
+| QA standalone 1920×1080 | **PASS** |
+| Player.log (ambas resoluciones) | **PASS** |
+| Regresión M1 | **PASS** |
+| Build final | **completado** |
+| Incidencias abiertas | **ninguna** |
+| **Resultado de M2** | **PASS** |
+
+**Tag de cierre previsto: `m2-complete`.** Se creará sobre el commit final de validación después de publicar y verificar dicho commit en el remoto.
 
 ---
 
-**Fin del informe de pruebas M2.** Fase 7 (QA final, regresión, GC Alloc y reporte): **PASS**, sin incidencias abiertas. Build y tag pendientes de Fase 8.
+**Fin del informe de pruebas M2.** Fase 7 (QA final, regresión, GC Alloc) y Fase 8A (build final Windows + validación fuera del Editor a 1280×720 y 1920×1080): **PASS**, sin incidencias abiertas. **Resultado de M2: PASS.** El tag `m2-complete` aún no se ha creado ni publicado.
