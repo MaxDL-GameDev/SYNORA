@@ -23,6 +23,7 @@ namespace Synora.Gameplay.Creatures
         public CreatureSensor Sensor { get; }
 
         // ── Mutable per-instance runtime state (public read; write via API only) ──
+        public CreatureStateId CurrentState { get; private set; }
         public int PatrolIndex { get; private set; }
         public int PatrolDirection { get; private set; }
         public float StateTimer { get; private set; }
@@ -46,6 +47,7 @@ namespace Synora.Gameplay.Creatures
             Sensor = sensor;
 
             // Safe initial state.
+            CurrentState = CreatureStateId.Idle;
             PatrolIndex = 0;
             PatrolDirection = 1;          // PingPong starts forward
             StateTimer = 0f;
@@ -53,6 +55,9 @@ namespace Synora.Gameplay.Creatures
             DetectedPlayer = null;
             IsMoving = false;
         }
+
+        /// <summary>Sets the active state id (the single shared source of truth). Called by CreatureBrain.</summary>
+        public void SetCurrentState(CreatureStateId state) => CurrentState = state;
 
         public void ResetStateTimer() => StateTimer = 0f;
 
