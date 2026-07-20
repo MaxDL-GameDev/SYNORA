@@ -20,6 +20,7 @@ namespace Synora.Gameplay.Creatures
         public Transform Root { get; }
         public IReadOnlyList<Transform> PatrolPoints { get; }
         public CreatureMovement Movement { get; }
+        public CreatureSensor Sensor { get; }
 
         // ── Mutable per-instance runtime state (public read; write via API only) ──
         public int PatrolIndex { get; private set; }
@@ -35,12 +36,14 @@ namespace Synora.Gameplay.Creatures
             CreatureIdentity identity,
             Transform root,
             IReadOnlyList<Transform> patrolPoints,
-            CreatureMovement movement = null)
+            CreatureMovement movement = null,
+            CreatureSensor sensor = null)
         {
             Identity = identity;
             Root = root;
             PatrolPoints = patrolPoints;
             Movement = movement;
+            Sensor = sensor;
 
             // Safe initial state.
             PatrolIndex = 0;
