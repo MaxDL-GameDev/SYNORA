@@ -9,10 +9,9 @@ namespace Synora.Gameplay.Creatures
     /// state. Not a service locator: no statics, no singletons, no Find, no
     /// GetComponent, no DontDestroyOnLoad. Built and owned by CreatureBrain.
     ///
-    /// Runtime component references (Movement, Sensor, Animator) are intentionally
-    /// NOT present in this phase: those types do not exist yet. They will be added
-    /// to the permanent-reference section when implemented, without changing this
-    /// contract or the mutable-state API.
+    /// Runtime component references are added to the permanent-reference section as
+    /// each is implemented, without changing the mutable-state API. Movement is
+    /// present as of this phase; Sensor and Animator arrive in later phases.
     /// </summary>
     public sealed class CreatureContext
     {
@@ -20,6 +19,7 @@ namespace Synora.Gameplay.Creatures
         public CreatureIdentity Identity { get; }
         public Transform Root { get; }
         public IReadOnlyList<Transform> PatrolPoints { get; }
+        public CreatureMovement Movement { get; }
 
         // ── Mutable per-instance runtime state (public read; write via API only) ──
         public int PatrolIndex { get; private set; }
@@ -34,11 +34,13 @@ namespace Synora.Gameplay.Creatures
         public CreatureContext(
             CreatureIdentity identity,
             Transform root,
-            IReadOnlyList<Transform> patrolPoints)
+            IReadOnlyList<Transform> patrolPoints,
+            CreatureMovement movement = null)
         {
             Identity = identity;
             Root = root;
             PatrolPoints = patrolPoints;
+            Movement = movement;
 
             // Safe initial state.
             PatrolIndex = 0;
