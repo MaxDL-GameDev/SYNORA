@@ -19,6 +19,7 @@ namespace Synora.Gameplay.Creatures
         [SerializeField] private CreatureIdentity identity;
         [SerializeField] private CreatureMovement movement;
         [SerializeField] private CreatureSensor sensor;
+        [SerializeField] private CreatureAnimator animator; // optional presenter (visual-only)
         [SerializeField] private Transform root;
         [SerializeField] private Transform[] patrolPoints = new Transform[0];
 
@@ -74,6 +75,12 @@ namespace Synora.Gameplay.Creatures
             context = new CreatureContext(identity, effectiveRoot, points, movement, sensor);
             movement.Initialize(context);
             sensor.Initialize(context);
+
+            // The presenter is optional and visual-only; it shares the same context.
+            if (animator != null)
+            {
+                animator.Initialize(context);
+            }
 
             states = new Dictionary<CreatureStateId, ICreatureState>(3)
             {
