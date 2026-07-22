@@ -91,17 +91,52 @@ namespace Synora.Tests
         }
 
         [Test]
-        public void Tick_FacesPlayerWhileAlert()
+        public void Enter_PreservesEntryFacing_AllDirections()
+        {
+            Vector2Int[] facings = { Vector2Int.left, Vector2Int.right, Vector2Int.up, Vector2Int.down };
+            foreach (var f in facings)
+            {
+                var ctx = Build(out _, out _, out _);
+                ctx.SetFacing(f);
+                var state = new AlertState();
+                state.Enter(ctx);
+                Assert.AreEqual(f, ctx.Facing, "Alert must keep the entry facing " + f);
+            }
+        }
+
+        [Test]
+        public void Tick_PlayerMovesAround_FacingUnchanged()
         {
             var ctx = Build(out _, out CreatureSensor sensor, out Transform root);
             root.position = Vector3.zero;
-            Transform player = CreatureTestKit.NewPoint(temp, new Vector2(2f, 0f)); // to the right
+            ctx.SetFacing(Vector2Int.left); // entered Alert facing Left
+            var player = CreatureTestKit.NewPoint(temp, new Vector2(2f, 0f));
             ctx.SetDetectedPlayer(player);
             CreatureTestKit.InjectDistance(sensor, 4f); // within lose
             var state = new AlertState();
             state.Enter(ctx);
-            state.Tick(ctx, 0.1f);
-            Assert.AreEqual(Vector2Int.right, ctx.Facing);
+
+            // Player circles the creature; facing must not snap toward it.
+            Vector2[] around = { new Vector2(0f, 2f), new Vector2(-2f, 0f), new Vector2(0f, -2f), new Vector2(2f, 0f) };
+            foreach (var p in around)
+            {
+                player.position = p;
+                state.Tick(ctx, 0.1f);
+                Assert.AreEqual(Vector2Int.left, ctx.Facing, "Facing must stay Left while the Player moves around during Alert.");
+            }
+        }
+
+        [Test]
+        public void Tick_DoesNotWriteFacing_EvenWhenReturningToPatrol()
+        {
+            var ctx = Build(out _, out CreatureSensor sensor, out _, linger: 0.5f);
+            ctx.SetFacing(Vector2Int.up);
+            CreatureTestKit.InjectDistance(sensor, 100f); // beyond lose
+            var state = new AlertState();
+            state.Enter(ctx);
+            CreatureStateId? next = state.Tick(ctx, 1f); // linger elapses -> Patrol
+            Assert.AreEqual(CreatureStateId.Patrol, next);
+            Assert.AreEqual(Vector2Int.up, ctx.Facing); // Alert never forced a facing
         }
     }
 }

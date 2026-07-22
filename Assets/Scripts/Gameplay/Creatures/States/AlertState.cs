@@ -1,15 +1,16 @@
-using UnityEngine;
 using Synora.Data;
 
 namespace Synora.Gameplay.Creatures
 {
     /// <summary>
     /// Alert behavior (MVP): stop, stay alert while the Player is within loseRadius,
-    /// and return to Patrol when the dual-radius + linger hysteresis says so. Faces
-    /// the Player while alert. It NEVER chases, flees, attacks, or sets a destination
-    /// toward the Player — the only physical response is Stop(). Uses CreatureSensing
-    /// as the pure decision authority; the linger timer is context.StateTimer.
-    /// Stateless.
+    /// and return to Patrol when the dual-radius + linger hysteresis says so.
+    /// PRESERVES the facing the creature had on entry — it does NOT turn toward the
+    /// Player (that would snap the silhouette, e.g. Walk_Left -> Alert_Down). It never
+    /// chases, flees, attacks, sets a destination toward the Player, or writes Facing;
+    /// the only physical response is Stop(). The sensor keeps tracking the Player.
+    /// Uses CreatureSensing as the pure decision authority; the linger timer is
+    /// context.StateTimer. Stateless.
     /// </summary>
     public sealed class AlertState : ICreatureState
     {
@@ -18,6 +19,8 @@ namespace Synora.Gameplay.Creatures
             context.Movement?.Stop();
             context.SetMoving(false);
             context.ResetStateTimer(); // linger starts now
+            // Facing is intentionally left as-is (the direction the creature entered
+            // Alert with), so the Alert clip matches the previous Idle/Walk direction.
         }
 
         public CreatureStateId? Tick(CreatureContext context, float deltaTime)
@@ -50,23 +53,14 @@ namespace Synora.Gameplay.Creatures
                 return CreatureStateId.Patrol;
             }
 
-            FacePlayer(context);
+            // MVP: no facing update in Alert. The entry facing is kept so the Alert
+            // clip stays on the same direction; the Player is still tracked by the
+            // sensor. Direct facing-to-Player is deferred to a future turn/reaction anim.
             return null;
         }
 
         public void Exit(CreatureContext context)
         {
-        }
-
-        private static void FacePlayer(CreatureContext context)
-        {
-            if (context.DetectedPlayer == null || context.Root == null)
-            {
-                return;
-            }
-
-            Vector2 direction = (Vector2)context.DetectedPlayer.position - (Vector2)context.Root.position;
-            context.SetFacing(CreatureMovement.ResolveFacing(direction, context.Facing));
         }
     }
 }
