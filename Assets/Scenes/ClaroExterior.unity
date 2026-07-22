@@ -5483,6 +5483,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+--- !u!114 &495036843 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 29971835314648264, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+  m_PrefabInstance: {fileID: 495036842}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08857b0f6e1f3bd418f1efa8098fc708, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureExaminableInteractable
 --- !u!1001 &520545150
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5634,12 +5645,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: sceneExaminables.Array.size
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: 'sceneExaminables.Array.data[0]'
       value: 
       objectReference: {fileID: 700848287}
+    - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
+      propertyPath: 'sceneExaminables.Array.data[1]'
+      value: 
+      objectReference: {fileID: 495036843}
+    - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
+      propertyPath: 'sceneExaminables.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1869925171}
     - target: {fileID: 7244936139127207398, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -7541,6 +7560,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+--- !u!114 &1869925171 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 29971835314648264, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+  m_PrefabInstance: {fileID: 1869925170}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08857b0f6e1f3bd418f1efa8098fc708, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureExaminableInteractable
 --- !u!1 &1942404950
 GameObject:
   m_ObjectHideFlags: 0
