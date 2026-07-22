@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Synora.Gameplay.Player;
@@ -32,6 +31,16 @@ namespace Synora.Gameplay.Interaction
         private ContactFilter2D interactableFilter;
         private bool hasLoggedBufferFull;
 
+        // Explicit reference-identity comparer so the duplicate-entry check keys on the
+        // exact serialized reference — never on an overridden Equals nor on InteractionId.
+        private sealed class ReferenceComparer : IEqualityComparer<MonoBehaviour>
+        {
+            public static readonly ReferenceComparer Instance = new ReferenceComparer();
+            public bool Equals(MonoBehaviour a, MonoBehaviour b) => ReferenceEquals(a, b);
+            public int GetHashCode(MonoBehaviour obj) =>
+                System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
+        }
+
         public IReadOnlyList<IInteractable> Candidates => candidateBuffer;
 
         public Vector2 OriginPosition =>
@@ -51,7 +60,7 @@ namespace Synora.Gameplay.Interaction
                 Debug.LogError("InteractionDetector: originPoint reference is not assigned.", this);
             }
 
-            HashSet<string> seenIds = new HashSet<string>(StringComparer.Ordinal);
+            HashSet<MonoBehaviour> seenEntries = new HashSet<MonoBehaviour>(ReferenceComparer.Instance);
 
             for (int i = 0; i < sceneExaminables.Count; i++)
             {
@@ -69,14 +78,22 @@ namespace Synora.Gameplay.Interaction
                     continue;
                 }
 
+                // Only listing the SAME entry more than once is a configuration error,
+                // detected by reference. Distinct entries may legitimately share an
+                // InteractionId, which is content identity, not instance identity
+                // (multiple instances of the same content are a valid setup).
+                if (!seenEntries.Add(behaviour))
+                {
+                    Debug.LogError("InteractionDetector: the same interactable entry is registered more than once; ignoring the duplicate.", behaviour);
+                    continue;
+                }
+
+                // A valid (non-empty) InteractionId is still required per M2, but a shared
+                // InteractionId across distinct entries is allowed.
                 string id = interactable.InteractionId;
                 if (string.IsNullOrWhiteSpace(id))
                 {
                     Debug.LogError("InteractionDetector: a registered interactable has an empty InteractionId.", behaviour);
-                }
-                else if (!seenIds.Add(id))
-                {
-                    Debug.LogError("InteractionDetector: duplicate InteractionId '" + id + "'.", behaviour);
                 }
 
                 if ((interactableLayer.value & (1 << behaviour.gameObject.layer)) == 0)

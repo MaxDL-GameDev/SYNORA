@@ -155,5 +155,99 @@ namespace Synora.Tests
                 Assert.IsInstanceOf<IInteractable>(kvp.Value);
             }
         }
+
+        [Test]
+        public void SharedInteractionId_DistinctInstances_BothRegistered_NoError()
+        {
+            // Same content id on two distinct entries is legitimate; no duplicate error.
+            var a = NewExaminable("shared.id");
+            var b = NewExaminable("shared.id");
+            var detector = BuildDetector(new List<MonoBehaviour> { a, b });
+            var lookup = Lookup(detector);
+            Assert.AreSame(a, lookup[a.GetComponent<Collider2D>()]);
+            Assert.AreSame(b, lookup[b.GetComponent<Collider2D>()]);
+            Assert.AreEqual(2, lookup.Count);
+        }
+
+        [Test]
+        public void TwoCreatureAdapters_SharedBaseDataId_BothRegistered()
+        {
+            // The real Verak case: two adapters sharing "creature.verak".
+            var a = NewCreatureAdapter("creature.verak");
+            var b = NewCreatureAdapter("creature.verak");
+            var detector = BuildDetector(new List<MonoBehaviour> { a, b });
+            var lookup = Lookup(detector);
+            Assert.AreSame(a, lookup[a.GetComponent<Collider2D>()]);
+            Assert.AreSame(b, lookup[b.GetComponent<Collider2D>()]);
+            Assert.AreEqual(2, lookup.Count);
+        }
+
+        [Test]
+        public void SameEntryTwice_ReportedOnce_AndRegisteredOnce()
+        {
+            var ex = NewExaminable("node");
+            LogAssert.Expect(LogType.Error, new Regex("same interactable entry is registered more than once"));
+            var detector = BuildDetector(new List<MonoBehaviour> { ex, ex });
+            var lookup = Lookup(detector);
+            Assert.AreEqual(1, lookup.Count, "The duplicate reference must not add a second mapping.");
+            Assert.AreSame(ex, lookup[ex.GetComponent<Collider2D>()]);
+        }
+
+        [Test]
+        public void NodePlusTwoVerak_SharedId_AllCoexist()
+        {
+            var node = NewExaminable("claro_exterior.nodo_inactivo");
+            var verakA = NewCreatureAdapter("creature.verak");
+            var verakB = NewCreatureAdapter("creature.verak");
+            var detector = BuildDetector(new List<MonoBehaviour> { node, verakA, verakB });
+            var lookup = Lookup(detector);
+            Assert.AreEqual(3, lookup.Count);
+            Assert.AreSame(node, lookup[node.GetComponent<Collider2D>()]);
+            Assert.AreSame(verakA, lookup[verakA.GetComponent<Collider2D>()]);
+            Assert.AreSame(verakB, lookup[verakB.GetComponent<Collider2D>()]);
+        }
+
+        [Test]
+        public void MultipleColliders_MapToSameInteractable()
+        {
+            var ex = NewExaminable("node");
+            var extra = ex.gameObject.AddComponent<BoxCollider2D>();
+            extra.isTrigger = true;
+            var detector = BuildDetector(new List<MonoBehaviour> { ex });
+            var lookup = Lookup(detector);
+            var colliders = ex.GetComponents<Collider2D>();
+            Assert.GreaterOrEqual(colliders.Length, 2);
+            foreach (var c in colliders)
+            {
+                Assert.AreSame(ex, lookup[c], "Every collider of one interactable maps to that same reference.");
+            }
+        }
+
+        [Test]
+        public void EmptyInteractionId_StillReported()
+        {
+            var ex = NewExaminable(""); // invalid id
+            LogAssert.Expect(LogType.Error, new Regex("empty InteractionId"));
+            var detector = BuildDetector(new List<MonoBehaviour> { ex });
+            Assert.AreEqual(1, Lookup(detector).Count, "Empty id is diagnosed but the entry still registers (M2 behavior).");
+        }
+
+        [TestCase(2)]
+        [TestCase(5)]
+        [TestCase(10)]
+        public void SharedId_ScalesToNInstances(int n)
+        {
+            var entries = new List<MonoBehaviour>(n);
+            for (int i = 0; i < n; i++)
+            {
+                entries.Add(NewCreatureAdapter("creature.verak"));
+            }
+            var detector = BuildDetector(entries);
+            var lookup = Lookup(detector);
+            Assert.AreEqual(n, lookup.Count, "All N distinct instances sharing an id must register.");
+            var distinct = new HashSet<IInteractable>();
+            foreach (var kvp in lookup) distinct.Add(kvp.Value);
+            Assert.AreEqual(n, distinct.Count, "Each instance must stay an independent reference.");
+        }
     }
 }
