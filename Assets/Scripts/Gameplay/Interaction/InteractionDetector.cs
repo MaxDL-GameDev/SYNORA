@@ -12,8 +12,16 @@ namespace Synora.Gameplay.Interaction
         [SerializeField] private LayerMask interactableLayer;
         [SerializeField] private float detectionRange = 1.25f;
         [SerializeField] private float frontalHalfWidth = 0.4f;
-        [SerializeField] private List<ExaminableInteractable> sceneExaminables =
-            new List<ExaminableInteractable>();
+        // Explicitly registered interactables in the scene. Typed as MonoBehaviour
+        // (not List<IInteractable>, which Unity cannot serialize) and validated to
+        // IInteractable in Awake. The field name is preserved on purpose: scenes
+        // override it via prefab modifications keyed by the property path
+        // "sceneExaminables.Array.data[N]"; renaming would silently drop those
+        // overrides (FormerlySerializedAs does not remap prefab-modification paths).
+        // The detector treats every entry uniformly as an IInteractable; it has no
+        // knowledge of what a concrete entry actually is.
+        [SerializeField] private List<MonoBehaviour> sceneExaminables =
+            new List<MonoBehaviour>();
 
         private readonly Collider2D[] overlapBuffer = new Collider2D[8];
         private readonly List<IInteractable> candidateBuffer =
@@ -47,32 +55,39 @@ namespace Synora.Gameplay.Interaction
 
             for (int i = 0; i < sceneExaminables.Count; i++)
             {
-                ExaminableInteractable examinable = sceneExaminables[i];
-                if (examinable == null)
+                MonoBehaviour behaviour = sceneExaminables[i];
+                if (behaviour == null)
                 {
                     Debug.LogError("InteractionDetector: sceneExaminables contains a null element.", this);
                     continue;
                 }
 
-                string id = examinable.InteractionId;
+                IInteractable interactable = behaviour as IInteractable;
+                if (interactable == null)
+                {
+                    Debug.LogError("InteractionDetector: a registered entry does not implement IInteractable: " + behaviour.GetType().Name, behaviour);
+                    continue;
+                }
+
+                string id = interactable.InteractionId;
                 if (string.IsNullOrWhiteSpace(id))
                 {
-                    Debug.LogError("InteractionDetector: an ExaminableInteractable has an empty InteractionId.", examinable);
+                    Debug.LogError("InteractionDetector: a registered interactable has an empty InteractionId.", behaviour);
                 }
                 else if (!seenIds.Add(id))
                 {
-                    Debug.LogError("InteractionDetector: duplicate InteractionId '" + id + "'.", examinable);
+                    Debug.LogError("InteractionDetector: duplicate InteractionId '" + id + "'.", behaviour);
                 }
 
-                if ((interactableLayer.value & (1 << examinable.gameObject.layer)) == 0)
+                if ((interactableLayer.value & (1 << behaviour.gameObject.layer)) == 0)
                 {
-                    Debug.LogWarning("InteractionDetector: ExaminableInteractable GameObject layer is not included in interactableLayer.", examinable);
+                    Debug.LogWarning("InteractionDetector: a registered interactable GameObject layer is not included in interactableLayer.", behaviour);
                 }
 
-                Collider2D[] colliders = examinable.GetComponents<Collider2D>();
+                Collider2D[] colliders = behaviour.GetComponents<Collider2D>();
                 if (colliders.Length == 0)
                 {
-                    Debug.LogError("InteractionDetector: ExaminableInteractable has no Collider2D.", examinable);
+                    Debug.LogError("InteractionDetector: a registered interactable has no Collider2D.", behaviour);
                 }
 
                 for (int c = 0; c < colliders.Length; c++)
@@ -80,10 +95,10 @@ namespace Synora.Gameplay.Interaction
                     Collider2D collider = colliders[c];
                     if (!collider.isTrigger)
                     {
-                        Debug.LogWarning("InteractionDetector: an ExaminableInteractable Collider2D is not a trigger.", examinable);
+                        Debug.LogWarning("InteractionDetector: a registered interactable Collider2D is not a trigger.", behaviour);
                     }
 
-                    colliderLookup[collider] = examinable;
+                    colliderLookup[collider] = interactable;
                 }
             }
 
