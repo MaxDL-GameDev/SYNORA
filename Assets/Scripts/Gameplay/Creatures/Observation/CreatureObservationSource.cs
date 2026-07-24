@@ -87,6 +87,13 @@ namespace Synora.Gameplay.Creatures
                 case CreatureStateId.Idle: return CreatureObservationState.Calm;
                 case CreatureStateId.Patrol: return CreatureObservationState.Roaming;
                 case CreatureStateId.Alert: return CreatureObservationState.Watchful;
+                // Altered Verak combat states (M5): mapped to the nearest existing
+                // observable category for enum completeness. No new observation state is
+                // introduced (SPEC §9), and the Altered Verak is not examinable in M5, so
+                // this mapping is never surfaced in practice.
+                case CreatureStateId.Chase: return CreatureObservationState.Watchful;
+                case CreatureStateId.Attack: return CreatureObservationState.Watchful;
+                case CreatureStateId.Subdued: return CreatureObservationState.Calm;
                 default: return CreatureObservationState.Unknown;
             }
         }

@@ -9,6 +9,11 @@ namespace Synora.Gameplay.Creatures
     {
         Idle,
         Patrol,
-        Alert
+        Alert,
+        // Altered Verak combat states (M5 Fase 6). Additive: ambient creatures never
+        // register these, so Verak normal (M3) keeps exactly {Idle, Patrol, Alert}.
+        Chase,
+        Attack,
+        Subdued
     }
 }

@@ -23,6 +23,10 @@ namespace Synora.Gameplay.Creatures
         [SerializeField] private Transform root;
         [SerializeField] private Transform[] patrolPoints = new Transform[0];
 
+        // Optional per-creature state-set provider (implements ICreatureStateProvider).
+        // Null for ambient creatures, which keep the default {Idle, Patrol, Alert}.
+        [SerializeField] private MonoBehaviour stateProvider;
+
         private CreatureContext context;
         private Dictionary<CreatureStateId, ICreatureState> states;
         private ICreatureState current;
@@ -82,21 +86,70 @@ namespace Synora.Gameplay.Creatures
                 animator.Initialize(context);
             }
 
+            CreatureStateId initial;
+            if (!BuildStateSet(context, out initial))
+            {
+                return; // provider misconfigured; not initialized (warned inside)
+            }
+
+            context.SetCurrentState(initial);
+            current = states[initial];
+            current.Enter(context);
+
+            isInitialized = true;
+        }
+
+        /// <summary>
+        /// Builds the state instances and resolves the initial state. Uses the optional
+        /// ICreatureStateProvider when assigned; otherwise the ambient default
+        /// {Idle, Patrol, Alert} entering Idle (M3 behavior, unchanged). Returns false
+        /// only when a provider is assigned but unusable.
+        /// </summary>
+        private bool BuildStateSet(CreatureContext ctx, out CreatureStateId initial)
+        {
+            initial = CreatureStateId.Idle;
+
+            if (stateProvider != null)
+            {
+                if (!(stateProvider is ICreatureStateProvider provider))
+                {
+                    Debug.LogWarning("CreatureBrain: stateProvider does not implement ICreatureStateProvider; not initialized.", this);
+                    return false;
+                }
+
+                IReadOnlyDictionary<CreatureStateId, ICreatureState> built = provider.BuildStates(ctx);
+                if (built == null || built.Count == 0)
+                {
+                    Debug.LogWarning("CreatureBrain: state provider returned no states; not initialized.", this);
+                    return false;
+                }
+
+                states = new Dictionary<CreatureStateId, ICreatureState>(built);
+                initial = provider.InitialState;
+
+                if (!states.ContainsKey(initial))
+                {
+                    if (!states.ContainsKey(CreatureStateId.Idle))
+                    {
+                        Debug.LogWarning("CreatureBrain: provider initial state is missing and there is no Idle fallback; not initialized.", this);
+                        return false;
+                    }
+
+                    Debug.LogWarning("CreatureBrain: provider initial state not in its set; falling back to Idle.", this);
+                    initial = CreatureStateId.Idle;
+                }
+
+                return true;
+            }
+
             states = new Dictionary<CreatureStateId, ICreatureState>(3)
             {
                 { CreatureStateId.Idle, new IdleState() },
                 { CreatureStateId.Patrol, new PatrolState() },
                 { CreatureStateId.Alert, new AlertState() },
             };
-
-            // Canonical initial state. CreatureIdentity defines no explicit initial
-            // state, so Idle is the documented fallback.
-            const CreatureStateId initial = CreatureStateId.Idle;
-            context.SetCurrentState(initial);
-            current = states[initial];
-            current.Enter(context);
-
-            isInitialized = true;
+            initial = CreatureStateId.Idle;
+            return true;
         }
 
         private void Update()
