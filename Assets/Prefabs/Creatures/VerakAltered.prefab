@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &7537137347908145666
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 29971835314648264, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: interactionEnabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 646956421011425930, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7575150277239556550, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: stateProvider
+      value: 
+      objectReference: {fileID: 1079786761783668187}
+    - target: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      propertyPath: m_Name
+      value: VerakAltered
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8161890091850764442}
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 400148358685324265}
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4551441291300220802}
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1079786761783668187}
+  m_SourcePrefab: {fileID: 100100000, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+--- !u!114 &124162860970793924 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7575150277239556550, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+  m_PrefabInstance: {fileID: 7537137347908145666}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6bf38ecb711954297f63d53c64a59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureBrain
+--- !u!1 &256571446334441612 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+  m_PrefabInstance: {fileID: 7537137347908145666}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &8161890091850764442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136d79ec7fe48064abe2581efc74f9d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Combat.Health
+  maxHealth: 30
+--- !u!114 &400148358685324265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba09411f52d6917498a5dac07d6844a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureAttackHitResolver
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 256
+  attackRange: 1.4
+  attackWidth: 1
+  damageAmount: 10
+--- !u!114 &4551441291300220802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fa8d57341359ba48b0af06a22e1f780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureAttackController
+  resolver: {fileID: 400148358685324265}
+  windupDuration: 0.35
+  activeDuration: 0.2
+  cooldownDuration: 1
+--- !u!114 &1079786761783668187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddea645054da7854a88f08a7f59b2825, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.AlteredVerakSetup
+  brain: {fileID: 124162860970793924}
+  health: {fileID: 8161890091850764442}
+  attackController: {fileID: 4551441291300220802}
+  attackRange: 1.3

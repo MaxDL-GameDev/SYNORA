@@ -107,6 +107,10 @@ GameObject:
   - component: {fileID: 3058012929028030953}
   - component: {fileID: 4164095416852513359}
   - component: {fileID: 5254442603187374984}
+  - component: {fileID: 8629002042796946927}
+  - component: {fileID: 1656461543861092948}
+  - component: {fileID: 299478987614588075}
+  - component: {fileID: 219725358121635867}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -207,6 +211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerInputReader
   moveAction: {fileID: -5829733920648459813, guid: 0eefcebf51932f04babc09b1e5c7ef41, type: 3}
+  attackAction: {fileID: 4632021418788383885, guid: 0eefcebf51932f04babc09b1e5c7ef41, type: 3}
 --- !u!114 &3058012929028030953
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,3 +255,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 156755272e4136e46944aa60e11ae1a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Synora.Runtime::Synora.Systems.PlayerControlGate
+--- !u!114 &8629002042796946927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 136d79ec7fe48064abe2581efc74f9d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Combat.Health
+  maxHealth: 30
+--- !u!114 &1656461543861092948
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77960d0c074dbd348953f0c40b3d5c92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerAttack
+  inputReader: {fileID: 388901768796767258}
+  orientation: {fileID: 4164095416852513359}
+  gate: {fileID: 5254442603187374984}
+  windowDuration: 0.15
+  cooldownDuration: 0.5
+--- !u!114 &299478987614588075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d26cb7ef629ace4eaf0faf93fd5b99d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerAttackHitResolver
+  attack: {fileID: 1656461543861092948}
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 4096
+  attackRange: 1.2
+  attackWidth: 1
+  damageAmount: 10
+--- !u!114 &219725358121635867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 097797adb11a07c4f883075f0f980645, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerTemporaryDefeat
+  health: {fileID: 8629002042796946927}
+  gate: {fileID: 5254442603187374984}
