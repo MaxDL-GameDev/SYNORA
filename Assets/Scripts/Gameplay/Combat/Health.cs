@@ -26,6 +26,12 @@ namespace Synora.Gameplay.Combat
         /// <summary>Raised exactly once when health transitions from above zero to zero.</summary>
         public event Action Depleted;
 
+        /// <summary>
+        /// Raised whenever Current changes (damage applied or ResetHealth). Presentation
+        /// and UI observe this; it never lets an observer mutate Health.
+        /// </summary>
+        public event Action Changed;
+
         /// <summary>Normalized, always-valid maximum (a non-positive serialized value becomes 1).</summary>
         public float Max => NormalizeMaxHealth(maxHealth);
 
@@ -59,12 +65,19 @@ namespace Synora.Gameplay.Combat
         {
             maxHealth = NormalizeMaxHealth(maxHealth);
             currentHealth = maxHealth;
+            Changed?.Invoke();
         }
 
         public void ApplyDamage(in DamageInfo damage)
         {
+            float before = currentHealth;
             bool wasAboveZero = currentHealth > 0f;
             currentHealth = ComputeDamaged(currentHealth, damage.Amount, Max);
+
+            if (currentHealth != before)
+            {
+                Changed?.Invoke();
+            }
 
             // Emit only on the >0 -> 0 transition: never on zero/negative (no-op) damage,
             // and never again while already at zero.

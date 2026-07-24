@@ -48,6 +48,14 @@ namespace Synora.Gameplay.Creatures
             if (toPlayer.sqrMagnitude <= attackRangeSqr)
             {
                 context.Movement?.Stop();
+
+                // A target whose Health is depleted is not attackable (M5 F8): hold in
+                // range without attacking rather than looping Attack on a defeated player.
+                if (TargetDefeated(context))
+                {
+                    return null;
+                }
+
                 if (attack != null && attack.CanStart)
                 {
                     return CreatureStateId.Attack;
@@ -58,6 +66,21 @@ namespace Synora.Gameplay.Creatures
 
             context.Movement?.SetDestination(player.position);
             return null;
+        }
+
+        // Reuses the shared Health contract (not PlayerTemporaryDefeat): a detected
+        // target with Health at zero is treated as not attackable. A target without a
+        // Health is considered attackable (unchanged behavior for other targets).
+        internal static bool TargetDefeated(CreatureContext context)
+        {
+            Transform p = context.DetectedPlayer;
+            if (p == null)
+            {
+                return false;
+            }
+
+            Health h = p.GetComponentInParent<Health>();
+            return h != null && h.IsZero;
         }
 
         public void Exit(CreatureContext context)

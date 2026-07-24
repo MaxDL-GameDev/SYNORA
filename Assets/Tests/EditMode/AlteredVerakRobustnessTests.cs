@@ -243,7 +243,7 @@ namespace Synora.Tests
             hostileCtx.SetFacing(Vector2Int.left);
 
             var ambient = new AlertState();
-            var hostile = new CreatureHostileAlertState(NewHealthOnNewGo());
+            var hostile = new CreatureHostileAlertState(NewHealthOnNewGo(), 0f);
             ambient.Enter(ambientCtx);
             hostile.Enter(hostileCtx);
 
@@ -390,6 +390,19 @@ namespace Synora.Tests
             brain.RequestTransition(CreatureStateId.Chase); // not registered for an ambient creature
             brain.Tick(0.1f);
             Assert.AreEqual(CreatureStateId.Idle, brain.CurrentStateId, "Unregistered transition is ignored.");
+        }
+
+        // ─────────────────────────── Reload-transient guard (F8) ───────────────────────────
+
+        [Test]
+        public void Brain_Tick_WithNullCurrent_DoesNotThrow()
+        {
+            CreatureBrain brain = CreatureTestKit.BuildBrain(temp,
+                CreatureTestKit.NewIdentity(temp), new Transform[0], out _, out _);
+            brain.Initialize();
+            // Simulate a half-reloaded instance: current cleared while still "initialized".
+            CreatureTestKit.SetPrivate(brain, "current", null);
+            Assert.DoesNotThrow(() => brain.Tick(0.1f), "a half-initialized tick must be a safe no-op");
         }
 
         // ─────────────────────────── §15 observation mappings ───────────────────────────

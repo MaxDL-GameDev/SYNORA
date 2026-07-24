@@ -170,7 +170,11 @@ namespace Synora.Gameplay.Creatures
         /// </summary>
         public void Tick(float deltaTime)
         {
-            if (!isInitialized)
+            // Guard against a half-initialized instance (e.g. an assembly/domain reload
+            // while in Play Mode can transiently run Update before re-initialization):
+            // current/context must both exist. Under normal flow they are always set
+            // together with isInitialized.
+            if (!isInitialized || current == null || context == null)
             {
                 return;
             }

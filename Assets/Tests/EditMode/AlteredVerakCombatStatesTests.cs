@@ -91,7 +91,7 @@ namespace Synora.Tests
         {
             CreatureContext ctx = NewContext(out _, out _);
             ctx.SetFacing(Vector2Int.right);
-            var alert = new CreatureHostileAlertState(NewHealth());
+            var alert = new CreatureHostileAlertState(NewHealth(), 0.3f);
             alert.Enter(ctx);
             Assert.AreEqual(Vector2Int.right, ctx.Facing, "Alert must not snap facing.");
         }
@@ -101,8 +101,9 @@ namespace Synora.Tests
         {
             CreatureContext ctx = NewContext(out _, out _);
             ctx.SetDetectedPlayer(NewTransform(new Vector2(2f, 0f)));
-            var alert = new CreatureHostileAlertState(NewHealth());
-            Assert.AreEqual(CreatureStateId.Chase, alert.Tick(ctx, 0.1f));
+            var alert = new CreatureHostileAlertState(NewHealth(), 0.3f);
+            Assert.IsNull(alert.Tick(ctx, 0.1f), "dwells in Alert briefly so it is perceivable");
+            Assert.AreEqual(CreatureStateId.Chase, alert.Tick(ctx, 0.3f), "then pursues");
         }
 
         [Test]
@@ -110,7 +111,7 @@ namespace Synora.Tests
         {
             CreatureContext ctx = NewContext(out _, out _);
             ctx.ClearDetectedPlayer();
-            var alert = new CreatureHostileAlertState(NewHealth());
+            var alert = new CreatureHostileAlertState(NewHealth(), 0.3f);
             Assert.AreEqual(CreatureStateId.Idle, alert.Tick(ctx, 0.1f));
         }
 
@@ -119,7 +120,7 @@ namespace Synora.Tests
         {
             CreatureContext ctx = NewContext(out _, out _);
             ctx.SetDetectedPlayer(NewTransform(Vector2.zero));
-            var alert = new CreatureHostileAlertState(NewHealth(deplete: true));
+            var alert = new CreatureHostileAlertState(NewHealth(deplete: true), 0.3f);
             Assert.AreEqual(CreatureStateId.Subdued, alert.Tick(ctx, 0.1f));
         }
 
@@ -271,6 +272,82 @@ namespace Synora.Tests
             }
         }
 
+        // ─────────────────────────── Target attackability (F8 fix B) ───────────────────────────
+
+        private Transform NewTargetWithHealth(Vector2 pos, out Health h, bool defeated)
+        {
+            var go = new GameObject("Target");
+            temp.Add(go);
+            go.transform.position = pos;
+            h = go.AddComponent<Health>();
+            CreatureTestKit.SetPrivate(h, "maxHealth", 30f);
+            h.ResetHealth();
+            if (defeated) h.ApplyDamage(new DamageInfo(999f, DamageSourceKind.Player));
+            return go.transform;
+        }
+
+        [Test]
+        public void Chase_DoesNotAttack_DefeatedTarget_Holds()
+        {
+            CreatureContext ctx = NewContext(out CreatureMovement movement, out _);
+            CreatureAttackController controller = NewController(out _);
+            ctx.SetDetectedPlayer(NewTargetWithHealth(new Vector2(0.5f, 0f), out _, defeated: true));
+            var chase = new CreatureChaseState(NewHealth(), controller, 1f);
+            Assert.IsNull(chase.Tick(ctx, 0.1f), "must not attack a defeated target");
+            Assert.IsFalse(movement.HasDestination, "holds in range, no chase");
+        }
+
+        [Test]
+        public void Chase_Attacks_LiveTarget()
+        {
+            CreatureContext ctx = NewContext(out _, out _);
+            CreatureAttackController controller = NewController(out _);
+            ctx.SetDetectedPlayer(NewTargetWithHealth(new Vector2(0.5f, 0f), out _, defeated: false));
+            var chase = new CreatureChaseState(NewHealth(), controller, 1f);
+            Assert.AreEqual(CreatureStateId.Attack, chase.Tick(ctx, 0.1f), "a live target is still attacked");
+        }
+
+        [Test]
+        public void Attack_DoesNotStart_OnDefeatedTarget()
+        {
+            CreatureContext ctx = NewContext(out _, out _);
+            CreatureAttackController controller = NewController(out _);
+            ctx.SetFacing(Vector2Int.right);
+            ctx.SetDetectedPlayer(NewTargetWithHealth(new Vector2(0.5f, 0f), out _, defeated: true));
+            var attack = new CreatureAttackState(NewHealth(), controller);
+            attack.Enter(ctx);
+            Assert.IsFalse(controller.IsSequenceActive, "no attack starts on a defeated target");
+            Assert.AreEqual(CreatureStateId.Chase, attack.Tick(ctx, 0.05f));
+        }
+
+        [Test]
+        public void Attack_AbandonsToChase_WhenTargetDefeatedMidAttack()
+        {
+            CreatureContext ctx = NewContext(out _, out _);
+            CreatureAttackController controller = NewController(out _);
+            ctx.SetFacing(Vector2Int.right);
+            ctx.SetDetectedPlayer(NewTargetWithHealth(new Vector2(0.5f, 0f), out Health th, defeated: false));
+            var attack = new CreatureAttackState(NewHealth(), controller);
+            attack.Enter(ctx);
+            Assert.IsTrue(controller.IsSequenceActive, "started on a live target");
+
+            th.ApplyDamage(new DamageInfo(999f, DamageSourceKind.Player)); // killing blow lands
+            Assert.AreEqual(CreatureStateId.Chase, attack.Tick(ctx, 0.05f), "abandons via Brain, not looping");
+            Assert.IsTrue(controller.CanStart, "attack cancelled, no new window queued");
+        }
+
+        [Test]
+        public void Chase_ReengagesAfterTargetRecovers()
+        {
+            CreatureContext ctx = NewContext(out _, out _);
+            CreatureAttackController controller = NewController(out _);
+            ctx.SetDetectedPlayer(NewTargetWithHealth(new Vector2(0.5f, 0f), out Health th, defeated: true));
+            var chase = new CreatureChaseState(NewHealth(), controller, 1f);
+            Assert.IsNull(chase.Tick(ctx, 0.1f), "no attack while target defeated");
+            th.ResetHealth(); // target recovered
+            Assert.AreEqual(CreatureStateId.Attack, chase.Tick(ctx, 0.1f), "attackable again after recovery");
+        }
+
         // ─────────────────────────── Brain integration ───────────────────────────
 
         private CreatureBrain NewAlteredBrain(out CreatureSensor sensor, out Health health, out Transform playerT)
@@ -306,6 +383,7 @@ namespace Synora.Tests
             CreatureTestKit.SetPrivate(setup, "health", health);
             CreatureTestKit.SetPrivate(setup, "attackController", controller);
             CreatureTestKit.SetPrivate(setup, "attackRange", 1f);
+            CreatureTestKit.SetPrivate(setup, "alertDuration", 0.05f); // short dwell for deterministic ticks
 
             var brain = go.AddComponent<CreatureBrain>();
             CreatureTestKit.SetPrivate(brain, "identity", identity);

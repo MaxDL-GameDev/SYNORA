@@ -111,6 +111,8 @@ GameObject:
   - component: {fileID: 1656461543861092948}
   - component: {fileID: 299478987614588075}
   - component: {fileID: 219725358121635867}
+  - component: {fileID: 5222857327349469893}
+  - component: {fileID: 2709133053126418991}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -318,3 +320,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Player.PlayerTemporaryDefeat
   health: {fileID: 8629002042796946927}
   gate: {fileID: 5254442603187374984}
+  body: {fileID: 8870824345775199857}
+  recoveryPoint: {fileID: 0}
+  recoveryDelay: 2
+--- !u!114 &5222857327349469893
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7d23359c6c2a74380424a99d44f507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Presentation.SpriteFlash
+  spriteRenderer: {fileID: 1765946512674756138}
+  flashColor: {r: 1, g: 0.5, b: 0.5, a: 1}
+  terminalTint: {r: 0.45, g: 0.45, b: 0.6, a: 1}
+  flashDuration: 0.12
+--- !u!114 &2709133053126418991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8386035730265355537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5bc93badc21bb34c82ef94acb67d4cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Presentation.PlayerCombatPresentation
+  attack: {fileID: 1656461543861092948}
+  health: {fileID: 8629002042796946927}
+  defeat: {fileID: 219725358121635867}
+  flash: {fileID: 5222857327349469893}

@@ -13,17 +13,19 @@ namespace Synora.Gameplay.Creatures
     public sealed class CreatureHostileAlertState : ICreatureState
     {
         private readonly Health health;
+        private readonly float alertDuration;
 
-        public CreatureHostileAlertState(Health health)
+        public CreatureHostileAlertState(Health health, float alertDuration)
         {
             this.health = health;
+            this.alertDuration = alertDuration > 0f ? alertDuration : 0f;
         }
 
         public void Enter(CreatureContext context)
         {
             context.Movement?.Stop();
             context.SetMoving(false);
-            context.ResetStateTimer();
+            context.ResetStateTimer(); // alert dwell starts now
         }
 
         public CreatureStateId? Tick(CreatureContext context, float deltaTime)
@@ -38,7 +40,16 @@ namespace Synora.Gameplay.Creatures
                 return CreatureStateId.Idle; // lost the player before pursuing
             }
 
-            return CreatureStateId.Chase;
+            // Dwell briefly so the Alert visual is actually perceivable before Chase.
+            // The Brain still owns the transition; this only delays the request, it does
+            // not extend or decide the logical state elsewhere.
+            context.AdvanceStateTimer(deltaTime);
+            if (context.StateTimer >= alertDuration)
+            {
+                return CreatureStateId.Chase;
+            }
+
+            return null;
         }
 
         public void Exit(CreatureContext context)

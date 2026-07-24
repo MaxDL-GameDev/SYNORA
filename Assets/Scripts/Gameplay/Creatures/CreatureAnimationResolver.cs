@@ -52,12 +52,21 @@ namespace Synora.Gameplay.Creatures
             switch (state)
             {
                 case CreatureStateId.Alert:
-                    visual = CreatureVisualState.Alert; // Alert ignores movement for the visual
+                // Altered Verak's hostile alert reuses the existing Alert visual (M5 F8).
+                case CreatureStateId.Attack:
+                    // Attack has no dedicated clip; the alert pose is the compatible
+                    // reuse, with the attack itself shown by a presentation flash.
+                    visual = CreatureVisualState.Alert; // ignores movement for the visual
                     break;
                 case CreatureStateId.Patrol:
+                case CreatureStateId.Chase:
+                    // Chase reuses the Walk clips (moving) / Idle when momentarily still.
                     visual = isMoving ? CreatureVisualState.Walk : CreatureVisualState.Idle;
                     break;
                 case CreatureStateId.Idle:
+                case CreatureStateId.Subdued:
+                    // Subdued has no dedicated clip; it rests on Idle and is made
+                    // visually terminal by a persistent presentation tint.
                     visual = CreatureVisualState.Idle;
                     break;
                 default:

@@ -49,8 +49,15 @@ namespace Synora.Gameplay.Player
         private bool wasWindowActive;
         private bool hasLoggedBufferFull;
 
+        // The attacker's own damageable (if any), excluded from hits so a misconfigured
+        // targetLayers mask can never make the player damage itself — defense in depth
+        // beyond the layer mask. Resolved by hierarchy, not by name/tag.
+        private IDamageable self;
+
         private void Awake()
         {
+            self = GetComponentInParent<IDamageable>();
+
             if (targetLayers.value == 0)
             {
                 Debug.LogWarning("PlayerAttackHitResolver: targetLayers mask is empty; no target will be hit.", this);
@@ -122,9 +129,9 @@ namespace Synora.Gameplay.Player
             for (int i = 0; i < count; i++)
             {
                 IDamageable target = Resolve(overlapBuffer[i]);
-                if (target == null || damagedThisWindow.Contains(target))
+                if (target == null || ReferenceEquals(target, self) || damagedThisWindow.Contains(target))
                 {
-                    continue;
+                    continue; // ignore no-damageable colliders and the attacker itself
                 }
 
                 target.ApplyDamage(new DamageInfo(damageAmount, DamageSourceKind.Player));

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Synora.Gameplay.Creatures
@@ -39,6 +40,12 @@ namespace Synora.Gameplay.Creatures
         /// <summary>Cardinal direction captured when the current sequence started.</summary>
         public Vector2Int CapturedFacing => capturedFacing;
 
+        /// <summary>
+        /// Presentation-only signal raised when a new attack sequence actually starts.
+        /// Does not affect timing, the resolver, or damage.
+        /// </summary>
+        public event Action AttackStarted;
+
         private void Awake()
         {
             if (resolver == null)
@@ -70,7 +77,13 @@ namespace Synora.Gameplay.Creatures
 
             capturedFacing = facing;
             wasActive = false;
-            return Timer.TryStart();
+            bool started = Timer.TryStart();
+            if (started)
+            {
+                AttackStarted?.Invoke();
+            }
+
+            return started;
         }
 
         private void Update()

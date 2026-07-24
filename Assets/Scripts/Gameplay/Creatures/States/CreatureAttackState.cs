@@ -34,6 +34,12 @@ namespace Synora.Gameplay.Creatures
                 return;
             }
 
+            // Never open an attack on a defeated target (M5 F8).
+            if (CreatureChaseState.TargetDefeated(context))
+            {
+                return;
+            }
+
             attack?.TryStartAttack(context.Facing);
         }
 
@@ -45,6 +51,14 @@ namespace Synora.Gameplay.Creatures
                 // depletion, regardless of the controller's execution order this frame.
                 attack?.Cancel();
                 return CreatureStateId.Subdued;
+            }
+
+            // Target became defeated (e.g. this attack's killing blow) — abandon the
+            // attack through the Brain instead of looping on a Health-zero player.
+            if (CreatureChaseState.TargetDefeated(context))
+            {
+                attack?.Cancel();
+                return CreatureStateId.Chase;
             }
 
             // The sequence (windup + active) is over — or never started — so re-evaluate

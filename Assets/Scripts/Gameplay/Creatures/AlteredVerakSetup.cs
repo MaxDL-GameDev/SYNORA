@@ -23,6 +23,7 @@ namespace Synora.Gameplay.Creatures
         [SerializeField] private Health health;
         [SerializeField] private CreatureAttackController attackController;
         [SerializeField] private float attackRange = 1f;
+        [SerializeField, Min(0f)] private float alertDuration = 0.4f;
 
         private bool subscribed;
 
@@ -34,7 +35,7 @@ namespace Synora.Gameplay.Creatures
             {
                 { CreatureStateId.Idle, new IdleState() },
                 { CreatureStateId.Patrol, new PatrolState() },
-                { CreatureStateId.Alert, new CreatureHostileAlertState(health) },
+                { CreatureStateId.Alert, new CreatureHostileAlertState(health, alertDuration) },
                 { CreatureStateId.Chase, new CreatureChaseState(health, attackController, attackRange) },
                 { CreatureStateId.Attack, new CreatureAttackState(health, attackController) },
                 { CreatureStateId.Subdued, new CreatureSubduedState(attackController) },

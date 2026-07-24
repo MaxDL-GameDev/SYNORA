@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Synora.Systems;
 
@@ -34,6 +35,12 @@ namespace Synora.Gameplay.Player
 
         /// <summary>Cardinal facing captured when the current attack started.</summary>
         public Vector2Int CapturedFacing => capturedFacing;
+
+        /// <summary>
+        /// Presentation-only signal raised the moment a new attack window opens (once per
+        /// successful TryAttack). It does not affect timing, cooldown, damage or the gate.
+        /// </summary>
+        public event Action AttackStarted;
 
         private void OnEnable()
         {
@@ -106,6 +113,7 @@ namespace Synora.Gameplay.Player
             }
 
             capturedFacing = facing;
+            AttackStarted?.Invoke();
             return true;
         }
     }
