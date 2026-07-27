@@ -94,6 +94,11 @@ namespace Synora.Gameplay.Creatures
                 case CreatureStateId.Chase: return CreatureObservationState.Watchful;
                 case CreatureStateId.Attack: return CreatureObservationState.Watchful;
                 case CreatureStateId.Subdued: return CreatureObservationState.Calm;
+                // M6 restoration states: non-hostile, at-rest categories. The observation
+                // enum has no temporal-process value, and the Altered Verak is not
+                // examinable, so both map to the nearest calm category (never surfaced).
+                case CreatureStateId.Restoring: return CreatureObservationState.Calm;
+                case CreatureStateId.Restored: return CreatureObservationState.Calm;
                 default: return CreatureObservationState.Unknown;
             }
         }

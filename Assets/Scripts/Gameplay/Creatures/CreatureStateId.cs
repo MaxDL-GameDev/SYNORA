@@ -14,6 +14,10 @@ namespace Synora.Gameplay.Creatures
         // register these, so Verak normal (M3) keeps exactly {Idle, Patrol, Alert}.
         Chase,
         Attack,
-        Subdued
+        Subdued,
+        // M6 restoration states (additive). Behavioral flow: Subdued → Restoring → Restored.
+        // Ambient creatures never register these; Verak normal (M3) keeps {Idle, Patrol, Alert}.
+        Restoring,
+        Restored
     }
 }
