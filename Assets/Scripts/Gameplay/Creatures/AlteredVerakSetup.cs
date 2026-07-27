@@ -24,6 +24,7 @@ namespace Synora.Gameplay.Creatures
         [SerializeField] private CreatureAttackController attackController;
         [SerializeField] private float attackRange = 1f;
         [SerializeField, Min(0f)] private float alertDuration = 0.4f;
+        [SerializeField, Min(0f)] private float restorationDuration = 1.25f;
 
         private bool subscribed;
 
@@ -31,7 +32,7 @@ namespace Synora.Gameplay.Creatures
 
         public IReadOnlyDictionary<CreatureStateId, ICreatureState> BuildStates(CreatureContext context)
         {
-            return new Dictionary<CreatureStateId, ICreatureState>(6)
+            return new Dictionary<CreatureStateId, ICreatureState>(8)
             {
                 { CreatureStateId.Idle, new IdleState() },
                 { CreatureStateId.Patrol, new PatrolState() },
@@ -39,6 +40,11 @@ namespace Synora.Gameplay.Creatures
                 { CreatureStateId.Chase, new CreatureChaseState(health, attackController, attackRange) },
                 { CreatureStateId.Attack, new CreatureAttackState(health, attackController) },
                 { CreatureStateId.Subdued, new CreatureSubduedState(attackController) },
+                // M6 restoration flow: Subdued → Restoring → Restored. Restoring is only
+                // reachable via an external RequestTransition (the interactive origin
+                // arrives in a later phase); it completes to Restored on its own timer.
+                { CreatureStateId.Restoring, new CreatureRestoringState(restorationDuration) },
+                { CreatureStateId.Restored, new CreatureRestoredState() },
             };
         }
 
