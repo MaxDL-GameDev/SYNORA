@@ -3,11 +3,19 @@ using UnityEngine;
 namespace Synora.Gameplay.Presentation
 {
     /// <summary>
-    /// Reusable, presentation-only sprite feedback (M5 F8): a brief color flash for
-    /// attacks/damage and a persistent terminal tint for Defeat/Subdued. It is the ONLY
-    /// place that writes SpriteRenderer.color for combat feedback — gameplay never
-    /// touches the renderer. Captures the original color once and always restores it (or
-    /// the held terminal tint). No per-frame allocations; no Animator; no AnimationEvents.
+    /// Reusable, presentation-only sprite feedback and the SINGLE compositor of
+    /// SpriteRenderer.color (M5 F8 + M6 F6). Gameplay never touches the renderer.
+    ///
+    /// The composed color is layered deterministically:
+    ///   base color (captured once) -> persistent state tint -> temporary flash.
+    /// While a flash is active it dominates; when it ends the most recent persistent tint
+    /// is shown; with no persistent tint the original base is restored. The base is
+    /// captured exactly once (Awake), so a temporary or already-composed color is never
+    /// mistaken for the base. The persistent tint is a single slot (no multi-layer stack):
+    /// setting it again overwrites the previous one — which is how the restoration flow
+    /// replaces the Subdued terminal tint without any other component clearing it.
+    ///
+    /// No per-frame allocations; no Animator; no AnimationEvents; no coroutines.
     /// </summary>
     public sealed class SpriteFlash : MonoBehaviour
     {
@@ -18,11 +26,17 @@ namespace Synora.Gameplay.Presentation
 
         private Color originalColor = Color.white;
         private bool captured;
-        private bool terminalHeld;
         private float flashTimer;
 
+        // Single persistent tint slot (state feedback: terminal tint, restoration tint…).
+        private bool hasPersistentTint;
+        private Color persistentTint;
+        private float persistentIntensity;
+
         public bool IsFlashing => flashTimer > 0f;
-        public bool TerminalHeld => terminalHeld;
+
+        /// <summary>True while a persistent tint is held (terminal, restoration, …).</summary>
+        public bool TerminalHeld => hasPersistentTint;
 
         private void Awake() => Capture();
 
@@ -35,7 +49,21 @@ namespace Synora.Gameplay.Presentation
             }
         }
 
-        private Color BaseColor => terminalHeld ? terminalTint : originalColor;
+        // base -> persistent tint (flash is layered on top separately, in Flash/Apply).
+        private Color ComposedBase
+        {
+            get
+            {
+                if (!hasPersistentTint)
+                {
+                    return originalColor;
+                }
+
+                Color c = Color.Lerp(originalColor, persistentTint, Mathf.Clamp01(persistentIntensity));
+                c.a = originalColor.a; // preserve the original alpha; tint only affects RGB
+                return c;
+            }
+        }
 
         /// <summary>Starts a brief flash. Successive calls simply re-arm the timer.</summary>
         public void Flash()
@@ -44,18 +72,51 @@ namespace Synora.Gameplay.Presentation
             flashTimer = flashDuration;
             if (spriteRenderer != null)
             {
-                spriteRenderer.color = flashDuration > 0f ? flashColor : BaseColor;
+                spriteRenderer.color = flashDuration > 0f ? flashColor : ComposedBase;
             }
         }
 
-        /// <summary>Holds or clears a persistent terminal tint (Defeat / Subdued).</summary>
-        public void SetTerminalTint(bool held)
+        /// <summary>
+        /// Sets the single persistent tint layered over the base color. Does not disturb an
+        /// active flash (the flash keeps dominating); the value is used the moment the flash
+        /// ends. Intensity is clamped to [0,1].
+        /// </summary>
+        public void SetPersistentTint(Color tint, float intensity)
         {
             Capture();
-            terminalHeld = held;
+            hasPersistentTint = true;
+            persistentTint = tint;
+            persistentIntensity = Mathf.Clamp01(intensity);
             if (flashTimer <= 0f)
             {
                 Apply();
+            }
+        }
+
+        /// <summary>Clears the persistent tint, returning to the captured base color.</summary>
+        public void ClearPersistentTint()
+        {
+            Capture();
+            hasPersistentTint = false;
+            if (flashTimer <= 0f)
+            {
+                Apply();
+            }
+        }
+
+        /// <summary>
+        /// Backward-compatible terminal tint (Defeat / Subdued): a fixed-color persistent
+        /// tint at full intensity. Kept so existing callers stay unchanged.
+        /// </summary>
+        public void SetTerminalTint(bool held)
+        {
+            if (held)
+            {
+                SetPersistentTint(terminalTint, 1f);
+            }
+            else
+            {
+                ClearPersistentTint();
             }
         }
 
@@ -81,7 +142,7 @@ namespace Synora.Gameplay.Presentation
         {
             if (spriteRenderer != null)
             {
-                spriteRenderer.color = BaseColor;
+                spriteRenderer.color = ComposedBase;
             }
         }
 
