@@ -5735,7 +5735,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: sceneExaminables.Array.size
-      value: 3
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: 'sceneExaminables.Array.data[0]'
@@ -5749,6 +5749,14 @@ PrefabInstance:
       propertyPath: 'sceneExaminables.Array.data[2]'
       value: 
       objectReference: {fileID: 1869925171}
+    - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
+      propertyPath: 'sceneExaminables.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1356912677}
+    - target: {fileID: 6650048837782026327, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
+      propertyPath: 'sceneExaminables.Array.data[4]'
+      value: 
+      objectReference: {fileID: 1356912676}
     - target: {fileID: 7244936139127207398, guid: aaa7f5339ee61724fb9748e1febc08f0, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -6254,11 +6262,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7283788488017585143, guid: 5e680fc381ce6fb48b383fd2d24ab71a, type: 3}
+      propertyPath: gate
+      value: 
+      objectReference: {fileID: 520545154}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5e680fc381ce6fb48b383fd2d24ab71a, type: 3}
+--- !u!114 &1356912676 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6653664790176114399, guid: 5e680fc381ce6fb48b383fd2d24ab71a, type: 3}
+  m_PrefabInstance: {fileID: 1356912675}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 673e5f42bada78e4ba1e0c783a96a02c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.RestoredCreatureExaminableInteractable
+--- !u!114 &1356912677 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7283788488017585143, guid: 5e680fc381ce6fb48b383fd2d24ab71a, type: 3}
+  m_PrefabInstance: {fileID: 1356912675}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17fadc50039aaf5419ead1bbbb576703, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureRestorationInteractable
 --- !u!1 &1438309550
 GameObject:
   m_ObjectHideFlags: 0
