@@ -199,6 +199,66 @@ namespace Synora.Tests
             Assert.IsNull(state.Tick(ctx, 0.1f), "a null Movement must not throw and must not transition");
         }
 
+        // ── F4 fix: threshold normalization guarantees 0 <= stop <= follow ──
+
+        [Test]
+        public void InvertedThresholds_AreClampedSafely()
+        {
+            var state = new CreatureBondedState(1f, 2f); // stop (2) > follow (1)
+            float followSqr = (float)CreatureTestKit.GetPrivate(state, "followDistanceSqr");
+            float stopSqr = (float)CreatureTestKit.GetPrivate(state, "followStopDistanceSqr");
+            Assert.AreEqual(1f, followSqr, 1e-4f, "follow stays at its (non-negative) value");
+            Assert.LessOrEqual(stopSqr, followSqr, "stop must never exceed follow");
+            Assert.AreEqual(1f, stopSqr, 1e-4f, "stop is clamped down to follow");
+        }
+
+        [Test]
+        public void InvertedThresholds_DoNotAlternate_OnConsecutiveTicks()
+        {
+            var ctx = Build(out CreatureMovement movement);
+            PlayerAt(ctx, new Vector2(1.5f, 0f)); // in the would-be inverted band (1 < 1.5 <= 2)
+            var state = new CreatureBondedState(1f, 2f); // clamped so follow == stop == 1
+            state.Enter(ctx);
+
+            // 1.5 > follow(1) -> follows; with the invariant enforced it must KEEP following,
+            // never flipping SetDestination/Stop on consecutive ticks.
+            for (int i = 0; i < 6; i++)
+            {
+                state.Tick(ctx, 0.1f);
+                Assert.IsTrue(movement.HasDestination,
+                    "an inverted config must not alternate follow/stop (tick " + i + ")");
+            }
+        }
+
+        [Test]
+        public void NegativeThresholds_NormalizeToZero()
+        {
+            var state = new CreatureBondedState(-3f, -2f);
+            Assert.AreEqual(0f, (float)CreatureTestKit.GetPrivate(state, "followDistanceSqr"), 1e-4f);
+            Assert.AreEqual(0f, (float)CreatureTestKit.GetPrivate(state, "followStopDistanceSqr"), 1e-4f);
+        }
+
+        [Test]
+        public void ValidThresholds_ArePreservedExactly()
+        {
+            var state = new CreatureBondedState(2f, 1f); // already valid: unchanged
+            Assert.AreEqual(4f, (float)CreatureTestKit.GetPrivate(state, "followDistanceSqr"), 1e-4f);
+            Assert.AreEqual(1f, (float)CreatureTestKit.GetPrivate(state, "followStopDistanceSqr"), 1e-4f);
+        }
+
+        [Test]
+        public void InvertedThresholds_StillNeverRequestTransition()
+        {
+            var ctx = Build(out _);
+            PlayerAt(ctx, new Vector2(1.5f, 0f));
+            var state = new CreatureBondedState(1f, 2f);
+            state.Enter(ctx);
+            for (int i = 0; i < 10; i++)
+            {
+                Assert.IsNull(state.Tick(ctx, 0.1f), "Bonded stays stable even with an inverted config");
+            }
+        }
+
         // ── Separation of responsibilities ──
 
         [Test]

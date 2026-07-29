@@ -31,6 +31,13 @@ namespace Synora.Gameplay.Creatures
         {
             float follow = followDistance > 0f ? followDistance : 0f;
             float stop = followStopDistance > 0f ? followStopDistance : 0f;
+            // Enforce the hysteresis invariant 0 <= stop <= follow deterministically, so a
+            // misconfigured inversion (stop > follow) can never make consecutive ticks
+            // alternate between SetDestination and Stop. Never throws on bad Inspector input.
+            if (stop > follow)
+            {
+                stop = follow;
+            }
             followDistanceSqr = follow * follow;
             followStopDistanceSqr = stop * stop;
         }
