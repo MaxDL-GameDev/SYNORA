@@ -82,6 +82,30 @@ namespace Synora.Tests
         }
 
         [Test]
+        public void Provider_BuildsBonded_WithConfiguredFollowDistances()
+        {
+            var go = new GameObject("Setup");
+            temp.Add(go);
+            var setup = go.AddComponent<AlteredVerakSetup>();
+            CreatureTestKit.SetPrivate(setup, "followDistance", 3f);
+            CreatureTestKit.SetPrivate(setup, "followStopDistance", 1.5f);
+
+            var id = CreatureTestKit.NewIdentity(temp);
+            var rootGo = new GameObject("Root");
+            temp.Add(rootGo);
+            var ctx = new CreatureContext(id, rootGo.transform, new List<Transform>());
+
+            IReadOnlyDictionary<CreatureStateId, ICreatureState> states = setup.BuildStates(ctx);
+            var bonded = (CreatureBondedState)states[CreatureStateId.Bonded];
+
+            // The state stores squared thresholds; they must come from the setup, not hardcoded.
+            float followSqr = (float)CreatureTestKit.GetPrivate(bonded, "followDistanceSqr");
+            float stopSqr = (float)CreatureTestKit.GetPrivate(bonded, "followStopDistanceSqr");
+            Assert.AreEqual(9f, followSqr, 1e-4f, "followDistance (3) must flow from the setup");
+            Assert.AreEqual(2.25f, stopSqr, 1e-4f, "followStopDistance (1.5) must flow from the setup");
+        }
+
+        [Test]
         public void Brain_AcceptsExternalBondingRequest_FromRestored()
         {
             CreatureBrain brain = BrainInRestored(0.2f, out _);

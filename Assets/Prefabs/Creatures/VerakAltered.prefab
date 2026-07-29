@@ -437,6 +437,8 @@ MonoBehaviour:
   alertDuration: 0.4
   restorationDuration: 1.25
   bondingDuration: 1.25
+  followDistance: 2
+  followStopDistance: 1
 --- !u!114 &4071083385991613416
 MonoBehaviour:
   m_ObjectHideFlags: 0

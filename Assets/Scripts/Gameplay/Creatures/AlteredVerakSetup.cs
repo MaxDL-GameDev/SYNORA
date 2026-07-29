@@ -26,6 +26,10 @@ namespace Synora.Gameplay.Creatures
         [SerializeField, Min(0f)] private float alertDuration = 0.4f;
         [SerializeField, Min(0f)] private float restorationDuration = 1.25f;
         [SerializeField, Min(0f)] private float bondingDuration = 1.25f;
+        // Companion follow band (M7 F4): resume following past followDistance (max),
+        // stop within followStopDistance (min); keep stopDistance < followDistance.
+        [SerializeField, Min(0f)] private float followDistance = 2f;
+        [SerializeField, Min(0f)] private float followStopDistance = 1f;
 
         private bool subscribed;
 
@@ -51,7 +55,7 @@ namespace Synora.Gameplay.Creatures
                 // it completes to Bonded on its own timer. Bonded is stable (following
                 // arrives in F4). Restored stays terminal for its own logic.
                 { CreatureStateId.Bonding, new CreatureBondingState(bondingDuration) },
-                { CreatureStateId.Bonded, new CreatureBondedState() },
+                { CreatureStateId.Bonded, new CreatureBondedState(followDistance, followStopDistance) },
             };
         }
 
