@@ -10,7 +10,10 @@ namespace Synora.Systems
         Observation = 1 << 0,
         // Player temporary defeat (M5 §7). Additive flag: existing Observation
         // consumers are unaffected; defeat blocks control independently.
-        Defeat = 1 << 1
+        Defeat = 1 << 1,
+        // Bonding process (M7 F3). Additive flag: the player is held still while a
+        // creature is being bonded; independent of Observation/Defeat.
+        Bonding = 1 << 2
     }
 
     public sealed class PlayerControlGate : MonoBehaviour

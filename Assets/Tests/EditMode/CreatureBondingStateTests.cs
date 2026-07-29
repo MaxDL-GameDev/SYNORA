@@ -92,5 +92,46 @@ namespace Synora.Tests
             var state = new CreatureBondingState(1.0f);
             Assert.IsNull(state.Tick(ctx, 1.0f), "No timer before Enter; must be safe (cannot complete without its timer).");
         }
+
+        // ── F3: approach via CreatureMovement (never moves the Transform directly) ──
+
+        [Test]
+        public void Tick_ApproachesPlayer_ViaMovement_WithoutMovingTransform()
+        {
+            var ctx = Build(out CreatureMovement movement);
+            Vector3 rootBefore = ctx.Root.position;
+            Transform player = CreatureTestKit.NewPoint(temp, new Vector2(5f, 0f));
+            ctx.SetDetectedPlayer(player);
+
+            var state = new CreatureBondingState(1.0f);
+            state.Enter(ctx);
+            Assert.IsNull(state.Tick(ctx, 0.2f), "not yet complete");
+
+            Assert.IsTrue(movement.HasDestination, "Bonding drives the approach through CreatureMovement.");
+            Assert.AreEqual((Vector2)player.position, movement.Destination, "destination is the player's position");
+            Assert.AreEqual(rootBefore, ctx.Root.position, "the state must never move the Transform directly");
+        }
+
+        [Test]
+        public void Tick_NoPlayer_HoldsStill()
+        {
+            var ctx = Build(out CreatureMovement movement);
+            var state = new CreatureBondingState(1.0f);
+            state.Enter(ctx);
+            movement.SetDestination(new Vector2(9f, 9f)); // a leftover destination
+            Assert.IsNull(state.Tick(ctx, 0.2f));
+            Assert.IsFalse(movement.HasDestination, "with no player the approach holds still (no endless movement)");
+        }
+
+        [Test]
+        public void NonInterruptible_NoPlayer_NeverLeavesUntilBonded()
+        {
+            var ctx = Build(out _); // no DetectedPlayer
+            var state = new CreatureBondingState(0.5f);
+            state.Enter(ctx);
+            Assert.IsNull(state.Tick(ctx, 0.2f), "never Idle: Bonding is non-interruptible");
+            Assert.IsNull(state.Tick(ctx, 0.2f), "never Idle: Bonding is non-interruptible");
+            Assert.AreEqual(CreatureStateId.Bonded, state.Tick(ctx, 0.2f), "0.6 >= 0.5 → the only exit is Bonded");
+        }
     }
 }
