@@ -25,6 +25,7 @@ namespace Synora.Gameplay.Creatures
         [SerializeField] private float attackRange = 1f;
         [SerializeField, Min(0f)] private float alertDuration = 0.4f;
         [SerializeField, Min(0f)] private float restorationDuration = 1.25f;
+        [SerializeField, Min(0f)] private float bondingDuration = 1.25f;
 
         private bool subscribed;
 
@@ -32,7 +33,7 @@ namespace Synora.Gameplay.Creatures
 
         public IReadOnlyDictionary<CreatureStateId, ICreatureState> BuildStates(CreatureContext context)
         {
-            return new Dictionary<CreatureStateId, ICreatureState>(8)
+            return new Dictionary<CreatureStateId, ICreatureState>(10)
             {
                 { CreatureStateId.Idle, new IdleState() },
                 { CreatureStateId.Patrol, new PatrolState() },
@@ -45,6 +46,12 @@ namespace Synora.Gameplay.Creatures
                 // arrives in a later phase); it completes to Restored on its own timer.
                 { CreatureStateId.Restoring, new CreatureRestoringState(restorationDuration) },
                 { CreatureStateId.Restored, new CreatureRestoredState() },
+                // M7 bonding flow: Restored → Bonding → Bonded. Bonding is only reachable
+                // via an external RequestTransition (the interactive origin arrives in F2);
+                // it completes to Bonded on its own timer. Bonded is stable (following
+                // arrives in F4). Restored stays terminal for its own logic.
+                { CreatureStateId.Bonding, new CreatureBondingState(bondingDuration) },
+                { CreatureStateId.Bonded, new CreatureBondedState() },
             };
         }
 

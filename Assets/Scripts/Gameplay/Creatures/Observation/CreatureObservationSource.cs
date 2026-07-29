@@ -99,6 +99,11 @@ namespace Synora.Gameplay.Creatures
                 // examinable, so both map to the nearest calm category (never surfaced).
                 case CreatureStateId.Restoring: return CreatureObservationState.Calm;
                 case CreatureStateId.Restored: return CreatureObservationState.Calm;
+                // M7 bonding states (F1): mapped to the nearest calm category for enum
+                // completeness only, mirroring M5/M6. The companion's real observable
+                // meaning (examinable content) is defined in F6, not here.
+                case CreatureStateId.Bonding: return CreatureObservationState.Calm;
+                case CreatureStateId.Bonded: return CreatureObservationState.Calm;
                 default: return CreatureObservationState.Unknown;
             }
         }

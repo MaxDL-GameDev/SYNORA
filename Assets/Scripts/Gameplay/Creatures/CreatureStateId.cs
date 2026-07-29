@@ -18,6 +18,10 @@ namespace Synora.Gameplay.Creatures
         // M6 restoration states (additive). Behavioral flow: Subdued → Restoring → Restored.
         // Ambient creatures never register these; Verak normal (M3) keeps {Idle, Patrol, Alert}.
         Restoring,
-        Restored
+        Restored,
+        // M7 bonding states (additive). Behavioral flow: Restored → Bonding → Bonded.
+        // Ambient creatures never register these; Verak normal (M3) keeps {Idle, Patrol, Alert}.
+        Bonding,
+        Bonded
     }
 }

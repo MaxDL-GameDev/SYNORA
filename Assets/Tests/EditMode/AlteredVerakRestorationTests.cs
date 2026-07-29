@@ -64,7 +64,8 @@ namespace Synora.Tests
             {
                 Assert.IsTrue(states.ContainsKey(s), "missing existing state: " + s);
             }
-            Assert.AreEqual(8, states.Count);
+            // M7 F1 adds Bonding/Bonded to the same provider (count 8 → 10).
+            Assert.AreEqual(10, states.Count);
         }
 
         [Test]
