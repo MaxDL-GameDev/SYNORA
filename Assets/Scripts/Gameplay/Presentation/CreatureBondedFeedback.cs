@@ -1,6 +1,7 @@
 using UnityEngine;
 using Synora.Data;
 using Synora.Gameplay.Creatures;
+using Synora.Systems;
 
 namespace Synora.Gameplay.Presentation
 {
@@ -16,8 +17,10 @@ namespace Synora.Gameplay.Presentation
     /// requests a transition, moves the creature, touches CreatureMovement/PlayerControlGate,
     /// or writes SpriteRenderer.color. There is no OnDisable reset of the one-shot latch, so
     /// disabling and re-enabling the same instance while still Bonded does not replay the
-    /// feedback. Scene references (panel, eco) may be null in the prefab and are wired per
-    /// scene; a null reference is a safe no-op. No verak_vinculado / persistence (F6).
+    /// feedback. Scene references (panel, eco, session) may be null in the prefab and are
+    /// wired per scene; a null reference is a safe no-op. On the same edge it also notifies
+    /// the session-only <see cref="BondSessionState"/> (verak_vinculado) — it never stores
+    /// that flag itself and performs no persistence.
     ///
     /// The ficha is provisional presentation only: title + the creature's name (from
     /// CreatureIdentity) + a provisional affinity label — never real affinity/progress data.
@@ -28,6 +31,7 @@ namespace Synora.Gameplay.Presentation
         [SerializeField] private CreatureIdentity identity;
         [SerializeField] private BondEstablishedPresenter panel;
         [SerializeField] private EcoSignal eco;
+        [SerializeField] private BondSessionState session;
         [SerializeField] private string title = "Vínculo establecido";
         [SerializeField] private string provisionalAffinity = "provisional";
 
@@ -47,6 +51,7 @@ namespace Synora.Gameplay.Presentation
             {
                 panel?.Show(BuildFicha());
                 eco?.Emit();
+                session?.MarkBonded(); // record the session-only verak_vinculado flag
                 firedForBond = true;
             }
             else if (!bonded && firedForBond)

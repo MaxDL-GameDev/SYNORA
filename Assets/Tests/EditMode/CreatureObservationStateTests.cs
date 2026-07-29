@@ -29,6 +29,23 @@ namespace Synora.Tests
         }
 
         [Test]
+        public void Bonding_MapsTo_Calm()
+        {
+            // M7 F6: during Bonding the creature is observed as calm (never a hostile/Altered
+            // category, never Unknown).
+            Assert.AreEqual(CreatureObservationState.Calm,
+                CreatureObservationSource.Resolve(CreatureStateId.Bonding));
+        }
+
+        [Test]
+        public void Bonded_MapsTo_Calm()
+        {
+            // M7 F6: the bonded companion is observed as a calm presence.
+            Assert.AreEqual(CreatureObservationState.Calm,
+                CreatureObservationSource.Resolve(CreatureStateId.Bonded));
+        }
+
+        [Test]
         public void UnrecognizedStateId_MapsTo_Unknown()
         {
             // A value outside the defined enum (e.g. a future gameplay state) must

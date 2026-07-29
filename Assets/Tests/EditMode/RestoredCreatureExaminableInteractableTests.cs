@@ -120,7 +120,9 @@ namespace Synora.Tests
         [TestCase(CreatureStateId.Subdued, false)]
         [TestCase(CreatureStateId.Restoring, false)]
         [TestCase(CreatureStateId.Restored, true)]
-        public void Available_OnlyInRestored(CreatureStateId state, bool expected)
+        [TestCase(CreatureStateId.Bonding, false)]
+        [TestCase(CreatureStateId.Bonded, true)]
+        public void Available_InRestoredOrBonded(CreatureStateId state, bool expected)
         {
             var it = NewExaminable(out CreatureBrain brain, out _);
             Drive(brain, state);

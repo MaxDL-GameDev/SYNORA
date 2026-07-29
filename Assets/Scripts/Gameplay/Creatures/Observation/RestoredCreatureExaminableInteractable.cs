@@ -12,12 +12,14 @@ namespace Synora.Gameplay.Creatures
     /// pipeline: <c>IInteractionReceiver.ShowObservation(...)</c>.
     ///
     /// Single source of truth is <see cref="CreatureBrain.CurrentStateId"/>: it is available
-    /// ONLY while the creature is Restored. That makes it mutually exclusive with
-    /// <see cref="CreatureRestorationInteractable"/> (available only while Subdued) — the
-    /// exclusion comes from each component's own <c>CanInteract</c>, never from a shared
-    /// flag. It keeps no restoration state of its own, never requests a transition, never
-    /// touches the timer, and emits no presentation. Examination is a passive observation,
-    /// so — per the F4.1 decision — it does NOT consult <c>PlayerControlGate</c>.
+    /// while the creature is Restored OR Bonded — the calm, post-combat states in which the
+    /// creature (and later the companion) remains observable (M7 F6). That keeps it mutually
+    /// exclusive with <see cref="CreatureRestorationInteractable"/> (Subdued only) and
+    /// <see cref="CreatureBondingInteractable"/> (Restored only) — the exclusion comes from
+    /// each component's own <c>CanInteract</c>, never a shared flag. It keeps no restoration
+    /// state of its own, never requests a transition, never touches the timer, and emits no
+    /// presentation. Examination is a passive observation, so — per the F4.1 decision — it
+    /// does NOT consult <c>PlayerControlGate</c>. It shows restored (never Altered) content.
     /// </summary>
     public sealed class RestoredCreatureExaminableInteractable : MonoBehaviour, IInteractable
     {
@@ -35,7 +37,8 @@ namespace Synora.Gameplay.Creatures
             isActiveAndEnabled
             && interactionEnabled
             && brain != null
-            && brain.CurrentStateId == CreatureStateId.Restored
+            && (brain.CurrentStateId == CreatureStateId.Restored
+                || brain.CurrentStateId == CreatureStateId.Bonded)
             && restoredData != null
             && restoredData.HasValidInteractionId;
 
@@ -50,8 +53,8 @@ namespace Synora.Gameplay.Creatures
                 return;
             }
 
-            // Re-validate at confirmation: only a Restored creature is examinable here.
-            // A rejected attempt shows nothing and changes nothing.
+            // Re-validate at confirmation: only a Restored/Bonded creature is examinable
+            // here. A rejected attempt shows nothing and changes nothing.
             if (!CanInteract)
             {
                 return;

@@ -7,6 +7,7 @@ using Synora.Data;
 using Synora.Gameplay.Combat;
 using Synora.Gameplay.Creatures;
 using Synora.Gameplay.Presentation;
+using Synora.Systems;
 
 namespace Synora.Tests
 {
@@ -20,6 +21,7 @@ namespace Synora.Tests
     public sealed class CreatureBondedFeedbackTests
     {
         private readonly List<Object> temp = new List<Object>();
+        private BondSessionState session;
 
         [TearDown]
         public void TearDown()
@@ -88,6 +90,10 @@ namespace Synora.Tests
             var identity = CreatureTestKit.NewIdentity(temp);
             CreatureTestKit.SetPrivate(identity, "displayName", "Verak");
 
+            var sessionGo = new GameObject("Session");
+            temp.Add(sessionGo);
+            session = sessionGo.AddComponent<BondSessionState>();
+
             var go = new GameObject("BondedFeedback");
             temp.Add(go);
             var fb = go.AddComponent<CreatureBondedFeedback>();
@@ -95,6 +101,7 @@ namespace Synora.Tests
             CreatureTestKit.SetPrivate(fb, "identity", identity);
             CreatureTestKit.SetPrivate(fb, "panel", panel);
             CreatureTestKit.SetPrivate(fb, "eco", eco);
+            CreatureTestKit.SetPrivate(fb, "session", session);
             CreatureTestKit.SetPrivate(fb, "title", "Vínculo establecido");
             CreatureTestKit.SetPrivate(fb, "provisionalAffinity", "provisional");
             return fb;
@@ -180,6 +187,46 @@ namespace Synora.Tests
             CreatureTestKit.SetPrivate(fb, "eco", (EcoSignal)null);
             Drive(brain, CreatureStateId.Bonded);
             Assert.DoesNotThrow(() => fb.Sync());
+        }
+
+        // ── verak_vinculado (session flag) ──
+
+        [Test]
+        public void Session_StartsFalse_BeforeBonded()
+        {
+            NewCoordinator(out CreatureBrain brain, out _, out _, out _);
+            Assert.AreEqual(CreatureStateId.Idle, brain.CurrentStateId);
+            Assert.IsFalse(session.IsBonded, "verak_vinculado is false before Bonded");
+        }
+
+        [Test]
+        public void Session_MarkedTrue_OnlyOnEnteringBonded()
+        {
+            var fb = NewCoordinator(out CreatureBrain brain, out _, out _, out _);
+            Drive(brain, CreatureStateId.Bonded);
+            fb.Sync();
+            Assert.IsTrue(session.IsBonded, "verak_vinculado becomes true on entering Bonded");
+        }
+
+        [Test]
+        public void Session_NotMarked_DuringBonding()
+        {
+            var fb = NewCoordinator(out CreatureBrain brain, out _, out _, out _);
+            Drive(brain, CreatureStateId.Bonding);
+            fb.Sync();
+            Assert.IsFalse(session.IsBonded, "the flag is not set during Bonding");
+        }
+
+        [TestCase(CreatureStateId.Idle)]        // Calm
+        [TestCase(CreatureStateId.Restoring)]   // Restoration
+        [TestCase(CreatureStateId.Restored)]
+        [TestCase(CreatureStateId.Subdued)]
+        public void Session_NotMarked_InNonBondedStates(CreatureStateId state)
+        {
+            var fb = NewCoordinator(out CreatureBrain brain, out _, out _, out _);
+            Drive(brain, state);
+            fb.Sync();
+            Assert.IsFalse(session.IsBonded, "the flag only changes on Bonded, not in " + state);
         }
 
         [Test]
