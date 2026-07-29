@@ -354,6 +354,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2375835938181147926}
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1160980903241596723}
   m_SourcePrefab: {fileID: 100100000, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
 --- !u!114 &124162860970793924 stripped
 MonoBehaviour:
@@ -505,6 +508,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Creatures.CreatureBondingControlBlock
   brain: {fileID: 124162860970793924}
   gate: {fileID: 0}
+--- !u!114 &1160980903241596723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 359d2d0ed2949a04388fb3e6d43b5035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Presentation.CreatureBondedFeedback
+  brain: {fileID: 124162860970793924}
+  flash: {fileID: 4071083385991613416}
+  panel: {fileID: 0}
+  eco: {fileID: 0}
+  message: "V\xEDnculo establecido"
 --- !u!212 &924322777505611036 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7226747806208438046, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
