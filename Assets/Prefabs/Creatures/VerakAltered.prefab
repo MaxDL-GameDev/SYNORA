@@ -357,6 +357,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1160980903241596723}
+    - targetCorrespondingSourceObject: {fileID: 7716579462160112270, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6481440646782970955}
   m_SourcePrefab: {fileID: 100100000, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}
 --- !u!114 &124162860970793924 stripped
 MonoBehaviour:
@@ -521,10 +524,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Presentation.CreatureBondedFeedback
   brain: {fileID: 124162860970793924}
-  flash: {fileID: 4071083385991613416}
+  identity: {fileID: 11400000, guid: 7f22da3f1629c884b8334380c856760d, type: 2}
   panel: {fileID: 0}
   eco: {fileID: 0}
-  message: "V\xEDnculo establecido"
+  title: "V\xEDnculo establecido"
+  provisionalAffinity: provisional
+--- !u!114 &6481440646782970955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256571446334441612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddc646ea2855cc7498806b9994154e49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Synora.Runtime::Synora.Gameplay.Presentation.CreatureBondPresentation
+  brain: {fileID: 124162860970793924}
+  flash: {fileID: 4071083385991613416}
+  bondTint: {r: 1, g: 0.85, b: 0.4, a: 1}
+  bondIntensity: 0.4
 --- !u!212 &924322777505611036 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 7226747806208438046, guid: 07e1e717ab0fa1340b9d71be195225e8, type: 3}

@@ -80,5 +80,15 @@ namespace Synora.Tests
             Assert.DoesNotThrow(() => pres.Tick(10f));
             Assert.IsFalse(pres.IsShown);
         }
+
+        [Test]
+        public void OnDisable_HidesPanel()
+        {
+            var pres = NewPresenter(out _, out _);
+            pres.Show("Vínculo establecido");
+            Assert.IsTrue(pres.IsShown);
+            CreatureTestKit.Invoke(pres, "OnDisable");
+            Assert.IsFalse(pres.IsShown, "a disabled presenter must not leave the ficha stuck visible");
+        }
     }
 }

@@ -1,36 +1,42 @@
 using UnityEngine;
+using Synora.Data;
 using Synora.Gameplay.Creatures;
 
 namespace Synora.Gameplay.Presentation
 {
     /// <summary>
-    /// Fires the "bond established" feedback ONCE when the creature enters Bonded (M7 F5).
-    /// Pure observer/coordinator: it watches <see cref="CreatureBrain.CurrentStateId"/> (the
-    /// single source of truth) and, on the rising edge into Bonded, triggers the three
-    /// provisional feedback channels — a one-shot <see cref="SpriteFlash.Flash"/> (SpriteFlash
-    /// stays the ONLY writer of SpriteRenderer.color), the "Vínculo establecido" UI
-    /// notification, and the ECO signal.
+    /// Fires the one-shot bond-established feedback ONCE when the creature enters Bonded
+    /// (M7 F5): the "Vínculo establecido" ficha and the ECO signal. The persistent bond
+    /// glow is a SEPARATE responsibility (<see cref="CreatureBondPresentation"/>) with its
+    /// own latch, so the two never interfere.
     ///
-    /// It never changes state, requests a transition, moves the creature, or touches
-    /// CreatureMovement / PlayerControlGate. Edge-detected (firedForBond), so nothing repeats
-    /// every Update. Scene-level references (panel, eco) may be null in the prefab and are
-    /// wired per scene; a null reference is a safe no-op, matching the rest of the creature's
-    /// wiring. It does NOT write the verak_vinculado flag or any persistence (F6).
+    /// Pure observer: it watches <see cref="CreatureBrain.CurrentStateId"/> (the single
+    /// source of truth) and, on the rising edge into Bonded (NOT Bonding), shows the ficha
+    /// and emits the ECO signal exactly once (firedForBond latch). It never changes state,
+    /// requests a transition, moves the creature, touches CreatureMovement/PlayerControlGate,
+    /// or writes SpriteRenderer.color. There is no OnDisable reset of the one-shot latch, so
+    /// disabling and re-enabling the same instance while still Bonded does not replay the
+    /// feedback. Scene references (panel, eco) may be null in the prefab and are wired per
+    /// scene; a null reference is a safe no-op. No verak_vinculado / persistence (F6).
+    ///
+    /// The ficha is provisional presentation only: title + the creature's name (from
+    /// CreatureIdentity) + a provisional affinity label — never real affinity/progress data.
     /// </summary>
     public sealed class CreatureBondedFeedback : MonoBehaviour
     {
         [SerializeField] private CreatureBrain brain;
-        [SerializeField] private SpriteFlash flash;
+        [SerializeField] private CreatureIdentity identity;
         [SerializeField] private BondEstablishedPresenter panel;
         [SerializeField] private EcoSignal eco;
-        [SerializeField] private string message = "Vínculo establecido";
+        [SerializeField] private string title = "Vínculo establecido";
+        [SerializeField] private string provisionalAffinity = "provisional";
 
         private bool firedForBond;
 
         private void Update() => Sync();
 
         /// <summary>
-        /// Fires the feedback once on entering Bonded; re-arms on leaving. Public for
+        /// Fires the ficha + ECO once on entering Bonded; re-arms on leaving. Public for
         /// deterministic tests. Idempotent while bonded — no repeat every Update.
         /// </summary>
         public void Sync()
@@ -39,8 +45,7 @@ namespace Synora.Gameplay.Presentation
 
             if (bonded && !firedForBond)
             {
-                flash?.Flash();
-                panel?.Show(message);
+                panel?.Show(BuildFicha());
                 eco?.Emit();
                 firedForBond = true;
             }
@@ -48,6 +53,15 @@ namespace Synora.Gameplay.Presentation
             {
                 firedForBond = false; // re-arm (Bonded is terminal in play; this is safety)
             }
+        }
+
+        // Provisional ficha (SPEC M7 F5): "Vínculo establecido" + name + provisional affinity.
+        // The name comes from CreatureIdentity (single source, "Verak"), not a duplicated
+        // string; the affinity is a provisional presentation label only.
+        private string BuildFicha()
+        {
+            string name = identity != null ? identity.DisplayName : string.Empty;
+            return title + "\n" + name + "\nAfinidad: " + provisionalAffinity;
         }
     }
 }

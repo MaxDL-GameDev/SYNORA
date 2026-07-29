@@ -55,6 +55,8 @@ namespace Synora.Gameplay.Presentation
             }
         }
 
+        private void OnDisable() => Hide(); // never leave the ficha stuck visible on disable
+
         private void Update() => Tick(Time.deltaTime);
 
         /// <summary>Counts down the visible window and hides on elapse. Public for deterministic tests.</summary>

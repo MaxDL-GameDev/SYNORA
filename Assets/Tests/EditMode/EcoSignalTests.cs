@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.UI;
 using Synora.Gameplay.Presentation;
 
 namespace Synora.Tests
@@ -26,6 +27,24 @@ namespace Synora.Tests
             return go.AddComponent<EcoSignal>();
         }
 
+        private BondEstablishedPresenter NewDisplay(out Text label)
+        {
+            var rootGo = new GameObject("EcoPanelRoot");
+            temp.Add(rootGo);
+            var labelGo = new GameObject("EcoLabel");
+            temp.Add(labelGo);
+            label = labelGo.AddComponent<Text>();
+            var presGo = new GameObject("EcoPresenter");
+            temp.Add(presGo);
+            presGo.SetActive(false);
+            var pres = presGo.AddComponent<BondEstablishedPresenter>();
+            CreatureTestKit.SetPrivate(pres, "panelRoot", rootGo);
+            CreatureTestKit.SetPrivate(pres, "label", label);
+            rootGo.SetActive(false);
+            presGo.SetActive(true);
+            return pres;
+        }
+
         [Test]
         public void Emit_IncrementsCount()
         {
@@ -36,10 +55,25 @@ namespace Synora.Tests
         }
 
         [Test]
-        public void Emit_WithoutAudioPlaceholder_DoesNotThrow()
+        public void Emit_WithoutDisplay_DoesNotThrow()
         {
             var eco = NewEco();
             Assert.DoesNotThrow(() => eco.Emit());
+            Assert.AreEqual(1, eco.EmitCount);
+        }
+
+        [Test]
+        public void Emit_WithDisplay_ShowsConfirmationText()
+        {
+            var eco = NewEco();
+            var display = NewDisplay(out Text label);
+            CreatureTestKit.SetPrivate(eco, "display", display);
+            CreatureTestKit.SetPrivate(eco, "message", "ECO: vínculo confirmado");
+
+            eco.Emit();
+
+            Assert.IsTrue(display.IsShown, "Emit has a real perceptible effect, not only a counter");
+            Assert.AreEqual("ECO: vínculo confirmado", label.text);
             Assert.AreEqual(1, eco.EmitCount);
         }
     }
